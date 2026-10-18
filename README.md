@@ -30,9 +30,12 @@ python3 -m http.server 8000
 
 ## GitHub Pages
 
-发布来源为 `main` 分支的根目录。更新并推送 `index.html` 后，GitHub Pages 会重新部署。
+通过 `.github/workflows/pages.yml` 发布。推送到 `main` 分支后会自动部署，也可以在 Actions 页面手动运行。Pages 的发布来源设置为 **GitHub Actions**。
+
+工作流固定使用 `ubuntu-24.04`，并将官方 Actions 固定到已验证版本的提交。上传组件使用支持 Node.js 24 的版本，避免旧版 Node.js 和 `ubuntu-latest` 镜像迁移提示。
 
 - `index.html`：页面内容、样式与交互逻辑，完整保存在单个文件中。
+- `.github/workflows/pages.yml`：打包并部署静态页面。
 - `.nojekyll`：直接发布静态文件。
 - `docs/preview.png`：README 预览图。
 
