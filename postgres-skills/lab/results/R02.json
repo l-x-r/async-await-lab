@@ -1,0 +1,19 @@
+{
+  "rule": "R02",
+  "server": "18.6",
+  "insert_literal": "2026-03-08 12:00:00+09 (东京中午12点)",
+  "session_UTC": {
+    "timestamp列": "2026-03-08 12:00:00",
+    "timestamptz列": "2026-03-08 03:00:00+00"
+  },
+  "session_Tokyo": {
+    "timestamp列": "2026-03-08 12:00:00",
+    "timestamptz列": "2026-03-08 12:00:00+09"
+  },
+  "ts_equals_tstz_when_session_UTC": false,
+  "ts_equals_tstz_when_session_Tokyo": true,
+  "dst_newyork_plus_1day_vs_24h": {
+    "+1 day": "2026-03-08 12:00:00-04",
+    "+24 hours": "2026-03-08 13:00:00-04"
+  }
+}

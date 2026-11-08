@@ -1,0 +1,58 @@
+{
+  "rule": "R03",
+  "server": "18.6",
+  "rows": 3000000,
+  "variants": {
+    "text": {
+      "heap_bytes": 183115776,
+      "index_bytes": 124084224,
+      "load_s": 3.2,
+      "lookup": {
+        "tps_median": 14318,
+        "tps_min": 14143,
+        "tps_max": 14749,
+        "runs": [
+          14236,
+          14318,
+          14143,
+          14749,
+          14329
+        ]
+      }
+    },
+    "varchar(32)": {
+      "heap_bytes": 183115776,
+      "index_bytes": 124084224,
+      "load_s": 3.1,
+      "lookup": {
+        "tps_median": 13778,
+        "tps_min": 13676,
+        "tps_max": 14412,
+        "runs": [
+          13778,
+          13962,
+          13755,
+          13676,
+          14412
+        ]
+      }
+    },
+    "char(32)": {
+      "heap_bytes": 229687296,
+      "index_bytes": 177176576,
+      "load_s": 3.5,
+      "lookup": {
+        "tps_median": 1,
+        "tps_min": 1,
+        "tps_max": 1,
+        "runs": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    }
+  }
+}

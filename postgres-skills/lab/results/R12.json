@@ -1,0 +1,174 @@
+{
+  "rule": "R12",
+  "rows": 10000000,
+  "server": "18.6",
+  "A_直接_SET_NOT_NULL": {
+    "ddl": "ALTER TABLE orders ALTER COLUMN note SET NOT NULL",
+    "duration_ms": 1076.5,
+    "lock_modes_seen": [
+      "AccessExclusiveLock"
+    ],
+    "writer": {
+      "count": 351,
+      "max_ms": 1075.2,
+      "p99_ms": 0.6,
+      "stalls_over_100ms": 1,
+      "errors": 0
+    },
+    "reader": {
+      "count": 356,
+      "max_ms": 1075.8,
+      "p99_ms": 0.5,
+      "stalls_over_100ms": 1,
+      "errors": 0
+    }
+  },
+  "B_CHECK_NOT_VALID四步法": {
+    "1_ADD_CHECK_NOT_VALID": {
+      "ddl": "ALTER TABLE orders ADD CONSTRAINT note_nn CHECK (note IS NOT NULL) NOT VALID",
+      "duration_ms": 1.3,
+      "lock_modes_seen": [],
+      "writer": {
+        "count": 358,
+        "max_ms": 1.3,
+        "p99_ms": 0.5,
+        "stalls_over_100ms": 0,
+        "errors": 0
+      },
+      "reader": {
+        "count": 359,
+        "max_ms": 1.5,
+        "p99_ms": 0.5,
+        "stalls_over_100ms": 0,
+        "errors": 0
+      }
+    },
+    "2_VALIDATE": {
+      "ddl": "ALTER TABLE orders VALIDATE CONSTRAINT note_nn",
+      "duration_ms": 944.6,
+      "lock_modes_seen": [
+        "ShareUpdateExclusiveLock"
+      ],
+      "writer": {
+        "count": 718,
+        "max_ms": 5.5,
+        "p99_ms": 1.4,
+        "stalls_over_100ms": 0,
+        "errors": 0
+      },
+      "reader": {
+        "count": 745,
+        "max_ms": 4.5,
+        "p99_ms": 1.0,
+        "stalls_over_100ms": 0,
+        "errors": 0
+      }
+    },
+    "3_SET_NOT_NULL(已有已验证的CHECK)": {
+      "ddl": "ALTER TABLE orders ALTER COLUMN note SET NOT NULL",
+      "duration_ms": 1.0,
+      "lock_modes_seen": [],
+      "writer": {
+        "count": 345,
+        "max_ms": 5.5,
+        "p99_ms": 0.6,
+        "stalls_over_100ms": 0,
+        "errors": 0
+      },
+      "reader": {
+        "count": 349,
+        "max_ms": 3.6,
+        "p99_ms": 0.6,
+        "stalls_over_100ms": 0,
+        "errors": 0
+      }
+    },
+    "4_DROP_CHECK": {
+      "ddl": "ALTER TABLE orders DROP CONSTRAINT note_nn",
+      "duration_ms": 1.7,
+      "lock_modes_seen": [],
+      "writer": {
+        "count": 353,
+        "max_ms": 0.9,
+        "p99_ms": 0.5,
+        "stalls_over_100ms": 0,
+        "errors": 0
+      },
+      "reader": {
+        "count": 356,
+        "max_ms": 1.5,
+        "p99_ms": 0.6,
+        "stalls_over_100ms": 0,
+        "errors": 0
+      }
+    }
+  },
+  "C_PG18原生NOT_NULL_NOT_VALID": {
+    "1_ADD_NOT_NULL_NOT_VALID": {
+      "ddl": "ALTER TABLE orders ADD CONSTRAINT note_nn2 NOT NULL note NOT VALID",
+      "duration_ms": 0.8,
+      "lock_modes_seen": [],
+      "writer": {
+        "count": 354,
+        "max_ms": 1.2,
+        "p99_ms": 0.8,
+        "stalls_over_100ms": 0,
+        "errors": 0
+      },
+      "reader": {
+        "count": 360,
+        "max_ms": 0.9,
+        "p99_ms": 0.4,
+        "stalls_over_100ms": 0,
+        "errors": 0
+      }
+    },
+    "2_VALIDATE": {
+      "ddl": "ALTER TABLE orders VALIDATE CONSTRAINT note_nn2",
+      "duration_ms": 1213.3,
+      "lock_modes_seen": [
+        "ShareUpdateExclusiveLock"
+      ],
+      "writer": {
+        "count": 816,
+        "max_ms": 4.4,
+        "p99_ms": 1.5,
+        "stalls_over_100ms": 0,
+        "errors": 0
+      },
+      "reader": {
+        "count": 831,
+        "max_ms": 6.6,
+        "p99_ms": 1.6,
+        "stalls_over_100ms": 0,
+        "errors": 0
+      }
+    },
+    "结果": [
+      [
+        true,
+        true
+      ],
+      [
+        true,
+        true
+      ],
+      [
+        true,
+        true
+      ],
+      [
+        true,
+        true
+      ],
+      [
+        true,
+        true
+      ],
+      [
+        true,
+        true
+      ]
+    ]
+  }
+}

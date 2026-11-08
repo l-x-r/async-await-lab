@@ -1,0 +1,225 @@
+{
+  "rule": "CHECKS",
+  "server": "18.6",
+  "bad": {
+    "R01": {
+      "rows": [
+        [
+          "child",
+          "child_parent_id_fkey"
+        ]
+      ]
+    },
+    "R02": {
+      "rows": [
+        [
+          "child",
+          "created_at",
+          "timestamp without time zone"
+        ]
+      ]
+    },
+    "R03": {
+      "rows": [
+        [
+          "child",
+          "code",
+          "character varying(20)"
+        ]
+      ]
+    },
+    "R04": {
+      "rows": [
+        [
+          "child",
+          "price",
+          "double precision"
+        ]
+      ]
+    },
+    "R05": {
+      "rows": [
+        [
+          "child",
+          "id",
+          "nextval('child_id_seq'::regclass)"
+        ]
+      ]
+    },
+    "R06": {
+      "rows": [
+        [
+          "tok",
+          "id",
+          "gen_random_uuid()"
+        ]
+      ]
+    },
+    "R07": {
+      "rows": [
+        [
+          "child_status_created",
+          "child",
+          "status",
+          "2.0"
+        ]
+      ]
+    },
+    "R08": {
+      "rows": [
+        [
+          "child_status_created",
+          "child",
+          "status",
+          "0.950",
+          "1120 kB"
+        ],
+        [
+          "child_status_cov",
+          "child",
+          "status",
+          "0.950",
+          "792 kB"
+        ]
+      ]
+    },
+    "R09": {
+      "rows": [
+        [
+          "child_status_cov",
+          "child",
+          "0",
+          "304",
+          "0.00"
+        ]
+      ]
+    },
+    "R10": {
+      "rows": [
+        [
+          "797.2",
+          "3",
+          "SELECT * FROM child, generate_series($1,$2) g ORDER BY created_at, g OFFSET $3 LIMIT $4"
+        ]
+      ]
+    },
+    "R11": {
+      "rows": [
+        [
+          "child_email_hash",
+          "child",
+          "1256 kB"
+        ]
+      ]
+    },
+    "R12": {
+      "rows": [
+        [
+          "child",
+          "parent_id",
+          "0.0"
+        ],
+        [
+          "child",
+          "created_at",
+          "0.0"
+        ],
+        [
+          "child",
+          "code",
+          "0.0"
+        ],
+        [
+          "child",
+          "price",
+          "0.0"
+        ],
+        [
+          "child",
+          "status",
+          "0.0"
+        ],
+        [
+          "child",
+          "email",
+          "0.0"
+        ],
+        [
+          "child",
+          "note",
+          "0.0"
+        ]
+      ]
+    },
+    "R13": {
+      "rows": []
+    },
+    "R14": {
+      "rows": [
+        [
+          "child_dup_uq",
+          "child"
+        ]
+      ]
+    },
+    "R15": {
+      "rows": [
+        [
+          "child_email_uq",
+          "child"
+        ],
+        [
+          "child_dup_uq",
+          "child"
+        ]
+      ]
+    }
+  },
+  "good": {
+    "R01": {
+      "rows": []
+    },
+    "R02": {
+      "rows": []
+    },
+    "R03": {
+      "rows": []
+    },
+    "R04": {
+      "rows": []
+    },
+    "R05": {
+      "rows": []
+    },
+    "R06": {
+      "rows": []
+    },
+    "R07": {
+      "rows": []
+    },
+    "R08": {
+      "rows": []
+    },
+    "R09": {
+      "rows": []
+    },
+    "R10": {
+      "rows": []
+    },
+    "R11": {
+      "rows": []
+    },
+    "R12": {
+      "rows": []
+    },
+    "R13": {
+      "rows": []
+    },
+    "R14": {
+      "rows": []
+    },
+    "R15": {
+      "rows": []
+    }
+  }
+}

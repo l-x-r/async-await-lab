@@ -1,0 +1,596 @@
+{
+  "rule": "R07",
+  "rows": 10000000,
+  "versions": {
+    "PostgreSQL 18": {
+      "server": "18.6",
+      "variants": {
+        "无索引(顺序扫描基线)": {
+          "index_bytes": null,
+          "queries": {
+            "A_status等值+时间范围": {
+              "ms_median": 708.949,
+              "ms_min": 682.386,
+              "ms_max": 768.418,
+              "runs": [
+                768.418,
+                708.949,
+                682.386,
+                695.605,
+                728.684
+              ],
+              "shared_hit": 3244,
+              "shared_read": 160691,
+              "nodes": [
+                "Aggregate",
+                "Seq Scan"
+              ],
+              "indexes": [],
+              "heap_fetches": 0,
+              "index_searches": null
+            },
+            "B_仅时间范围(缺前导列status)": {
+              "ms_median": 895.888,
+              "ms_min": 893.363,
+              "ms_max": 930.598,
+              "runs": [
+                895.888,
+                895.827,
+                907.662,
+                930.598,
+                893.363
+              ],
+              "shared_hit": 4372,
+              "shared_read": 159563,
+              "nodes": [
+                "Aggregate",
+                "Seq Scan"
+              ],
+              "indexes": [],
+              "heap_fetches": 0,
+              "index_searches": null
+            },
+            "C_仅时间范围(前导列customer_id有90万个取值)": {
+              "ms_median": 676.408,
+              "ms_min": 660.565,
+              "ms_max": 690.322,
+              "runs": [
+                671.109,
+                676.408,
+                679.877,
+                660.565,
+                690.322
+              ],
+              "shared_hit": 5500,
+              "shared_read": 158435,
+              "nodes": [
+                "Aggregate",
+                "Seq Scan"
+              ],
+              "indexes": [],
+              "heap_fetches": 0,
+              "index_searches": null
+            }
+          }
+        },
+        "(status, created_at)": {
+          "index_bytes": 316891136,
+          "queries": {
+            "A_status等值+时间范围": {
+              "ms_median": 0.118,
+              "ms_min": 0.11,
+              "ms_max": 0.178,
+              "runs": [
+                0.129,
+                0.118,
+                0.11,
+                0.178,
+                0.113
+              ],
+              "shared_hit": 7,
+              "shared_read": 0,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_sc"
+              ],
+              "heap_fetches": 0,
+              "index_searches": 1
+            },
+            "B_仅时间范围(缺前导列status)": {
+              "ms_median": 1.617,
+              "ms_min": 1.581,
+              "ms_max": 1.671,
+              "runs": [
+                1.671,
+                1.655,
+                1.611,
+                1.617,
+                1.581
+              ],
+              "shared_hit": 90,
+              "shared_read": 0,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_sc"
+              ],
+              "heap_fetches": 0,
+              "index_searches": 11
+            },
+            "C_仅时间范围(前导列customer_id有90万个取值)": {
+              "ms_median": 0.097,
+              "ms_min": 0.096,
+              "ms_max": 0.114,
+              "runs": [
+                0.099,
+                0.097,
+                0.096,
+                0.097,
+                0.114
+              ],
+              "shared_hit": 37,
+              "shared_read": 0,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_sc"
+              ],
+              "heap_fetches": 0,
+              "index_searches": 11
+            }
+          }
+        },
+        "(created_at, status)": {
+          "index_bytes": 316260352,
+          "queries": {
+            "A_status等值+时间范围": {
+              "ms_median": 0.45,
+              "ms_min": 0.393,
+              "ms_max": 0.48,
+              "runs": [
+                0.434,
+                0.465,
+                0.48,
+                0.393,
+                0.45
+              ],
+              "shared_hit": 57,
+              "shared_read": 0,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_cs"
+              ],
+              "heap_fetches": 0,
+              "index_searches": 1
+            },
+            "B_仅时间范围(缺前导列status)": {
+              "ms_median": 1.568,
+              "ms_min": 1.52,
+              "ms_max": 1.625,
+              "runs": [
+                1.625,
+                1.52,
+                1.586,
+                1.568,
+                1.567
+              ],
+              "shared_hit": 57,
+              "shared_read": 0,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_cs"
+              ],
+              "heap_fetches": 0,
+              "index_searches": 1
+            },
+            "C_仅时间范围(前导列customer_id有90万个取值)": {
+              "ms_median": 0.074,
+              "ms_min": 0.072,
+              "ms_max": 0.079,
+              "runs": [
+                0.073,
+                0.072,
+                0.079,
+                0.075,
+                0.074
+              ],
+              "shared_hit": 6,
+              "shared_read": 0,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_cs"
+              ],
+              "heap_fetches": 0,
+              "index_searches": 1
+            }
+          }
+        },
+        "(customer_id, created_at)": {
+          "index_bytes": 315400192,
+          "queries": {
+            "A_status等值+时间范围": {
+              "ms_median": 353.836,
+              "ms_min": 312.422,
+              "ms_max": 366.693,
+              "runs": [
+                366.693,
+                353.836,
+                312.422,
+                356.942,
+                332.045
+              ],
+              "shared_hit": 13641,
+              "shared_read": 38317,
+              "nodes": [
+                "Aggregate",
+                "Index Scan"
+              ],
+              "indexes": [
+                "ix_cc"
+              ],
+              "heap_fetches": 0,
+              "index_searches": 1
+            },
+            "B_仅时间范围(缺前导列status)": {
+              "ms_median": 312.866,
+              "ms_min": 304.992,
+              "ms_max": 327.602,
+              "runs": [
+                304.992,
+                327.602,
+                314.613,
+                307.879,
+                312.866
+              ],
+              "shared_hit": 1,
+              "shared_read": 38317,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_cc"
+              ],
+              "heap_fetches": 0,
+              "index_searches": 1
+            },
+            "C_仅时间范围(前导列customer_id有90万个取值)": {
+              "ms_median": 307.695,
+              "ms_min": 304.544,
+              "ms_max": 321.551,
+              "runs": [
+                307.695,
+                317.802,
+                321.551,
+                305.591,
+                304.544
+              ],
+              "shared_hit": 1,
+              "shared_read": 38317,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_cc"
+              ],
+              "heap_fetches": 0,
+              "index_searches": 1
+            }
+          }
+        }
+      }
+    },
+    "PostgreSQL 16": {
+      "server": "16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)",
+      "variants": {
+        "无索引(顺序扫描基线)": {
+          "index_bytes": null,
+          "queries": {
+            "A_status等值+时间范围": {
+              "ms_median": 629.984,
+              "ms_min": 621.824,
+              "ms_max": 640.51,
+              "runs": [
+                624.171,
+                629.984,
+                640.51,
+                634.051,
+                621.824
+              ],
+              "shared_hit": 2240,
+              "shared_read": 161695,
+              "nodes": [
+                "Aggregate",
+                "Seq Scan"
+              ],
+              "indexes": [],
+              "heap_fetches": 0,
+              "index_searches": null
+            },
+            "B_仅时间范围(缺前导列status)": {
+              "ms_median": 717.093,
+              "ms_min": 714.298,
+              "ms_max": 729.758,
+              "runs": [
+                729.758,
+                717.192,
+                717.093,
+                714.298,
+                714.995
+              ],
+              "shared_hit": 2432,
+              "shared_read": 161503,
+              "nodes": [
+                "Aggregate",
+                "Seq Scan"
+              ],
+              "indexes": [],
+              "heap_fetches": 0,
+              "index_searches": null
+            },
+            "C_仅时间范围(前导列customer_id有90万个取值)": {
+              "ms_median": 593.418,
+              "ms_min": 590.755,
+              "ms_max": 599.505,
+              "runs": [
+                593.418,
+                599.505,
+                593.257,
+                590.755,
+                596.402
+              ],
+              "shared_hit": 2624,
+              "shared_read": 161311,
+              "nodes": [
+                "Aggregate",
+                "Seq Scan"
+              ],
+              "indexes": [],
+              "heap_fetches": 0,
+              "index_searches": null
+            }
+          }
+        },
+        "(status, created_at)": {
+          "index_bytes": 316891136,
+          "queries": {
+            "A_status等值+时间范围": {
+              "ms_median": 0.113,
+              "ms_min": 0.108,
+              "ms_max": 0.142,
+              "runs": [
+                0.117,
+                0.113,
+                0.112,
+                0.142,
+                0.108
+              ],
+              "shared_hit": 7,
+              "shared_read": 0,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_sc"
+              ],
+              "heap_fetches": 0,
+              "index_searches": null
+            },
+            "B_仅时间范围(缺前导列status)": {
+              "ms_median": 216.678,
+              "ms_min": 176.54,
+              "ms_max": 219.26,
+              "runs": [
+                216.924,
+                176.54,
+                219.26,
+                194.906,
+                216.678
+              ],
+              "shared_hit": 28294,
+              "shared_read": 10199,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_sc"
+              ],
+              "heap_fetches": 0,
+              "index_searches": null
+            },
+            "C_仅时间范围(前导列customer_id有90万个取值)": {
+              "ms_median": 183.145,
+              "ms_min": 177.023,
+              "ms_max": 220.765,
+              "runs": [
+                177.023,
+                195.562,
+                220.765,
+                182.79,
+                183.145
+              ],
+              "shared_hit": 29707,
+              "shared_read": 8786,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_sc"
+              ],
+              "heap_fetches": 0,
+              "index_searches": null
+            }
+          }
+        },
+        "(created_at, status)": {
+          "index_bytes": 316260352,
+          "queries": {
+            "A_status等值+时间范围": {
+              "ms_median": 0.374,
+              "ms_min": 0.368,
+              "ms_max": 0.394,
+              "runs": [
+                0.394,
+                0.389,
+                0.374,
+                0.371,
+                0.368
+              ],
+              "shared_hit": 57,
+              "shared_read": 0,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_cs"
+              ],
+              "heap_fetches": 0,
+              "index_searches": null
+            },
+            "B_仅时间范围(缺前导列status)": {
+              "ms_median": 1.548,
+              "ms_min": 1.528,
+              "ms_max": 1.571,
+              "runs": [
+                1.56,
+                1.528,
+                1.548,
+                1.533,
+                1.571
+              ],
+              "shared_hit": 57,
+              "shared_read": 0,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_cs"
+              ],
+              "heap_fetches": 0,
+              "index_searches": null
+            },
+            "C_仅时间范围(前导列customer_id有90万个取值)": {
+              "ms_median": 0.068,
+              "ms_min": 0.068,
+              "ms_max": 0.084,
+              "runs": [
+                0.068,
+                0.068,
+                0.068,
+                0.084,
+                0.068
+              ],
+              "shared_hit": 6,
+              "shared_read": 0,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_cs"
+              ],
+              "heap_fetches": 0,
+              "index_searches": null
+            }
+          }
+        },
+        "(customer_id, created_at)": {
+          "index_bytes": 315400192,
+          "queries": {
+            "A_status等值+时间范围": {
+              "ms_median": 169.626,
+              "ms_min": 157.514,
+              "ms_max": 174.683,
+              "runs": [
+                169.626,
+                158.88,
+                174.683,
+                174.15,
+                157.514
+              ],
+              "shared_hit": 39841,
+              "shared_read": 12129,
+              "nodes": [
+                "Aggregate",
+                "Index Scan"
+              ],
+              "indexes": [
+                "ix_cc"
+              ],
+              "heap_fetches": 0,
+              "index_searches": null
+            },
+            "B_仅时间范围(缺前导列status)": {
+              "ms_median": 160.97,
+              "ms_min": 156.643,
+              "ms_max": 178.321,
+              "runs": [
+                178.321,
+                160.97,
+                156.643,
+                177.359,
+                159.086
+              ],
+              "shared_hit": 24013,
+              "shared_read": 14305,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_cc"
+              ],
+              "heap_fetches": 0,
+              "index_searches": null
+            },
+            "C_仅时间范围(前导列customer_id有90万个取值)": {
+              "ms_median": 158.098,
+              "ms_min": 151.845,
+              "ms_max": 175.85,
+              "runs": [
+                157.641,
+                175.85,
+                164.34,
+                151.845,
+                158.098
+              ],
+              "shared_hit": 25209,
+              "shared_read": 13109,
+              "nodes": [
+                "Aggregate",
+                "Index Only Scan"
+              ],
+              "indexes": [
+                "ix_cc"
+              ],
+              "heap_fetches": 0,
+              "index_searches": null
+            }
+          }
+        }
+      }
+    }
+  }
+}

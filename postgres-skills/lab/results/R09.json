@@ -1,0 +1,96 @@
+{
+  "rule": "R09",
+  "server": "18.6",
+  "rows": 3000000,
+  "steps": {
+    "普通索引(customer_id)": {
+      "ms_median": 4.417,
+      "ms_min": 3.769,
+      "ms_max": 6.781,
+      "runs": [
+        6.781,
+        6.003,
+        4.417,
+        3.884,
+        3.769
+      ],
+      "shared_hit": 6630,
+      "shared_read": 0,
+      "nodes": [
+        "Aggregate",
+        "Index Scan"
+      ],
+      "indexes": [
+        "o9_plain"
+      ],
+      "heap_fetches": 0
+    },
+    "覆盖索引,VACUUM 之后": {
+      "ms_median": 1.178,
+      "ms_min": 1.147,
+      "ms_max": 1.222,
+      "runs": [
+        1.178,
+        1.179,
+        1.15,
+        1.147,
+        1.222
+      ],
+      "shared_hit": 2495,
+      "shared_read": 0,
+      "nodes": [
+        "Aggregate",
+        "Index Only Scan"
+      ],
+      "indexes": [
+        "o9_cov"
+      ],
+      "heap_fetches": 0
+    },
+    "覆盖索引,大量 UPDATE 之后、VACUUM 之前": {
+      "ms_median": 4.741,
+      "ms_min": 4.226,
+      "ms_max": 8.042,
+      "runs": [
+        8.042,
+        6.626,
+        4.741,
+        4.338,
+        4.226
+      ],
+      "shared_hit": 9410,
+      "shared_read": 0,
+      "nodes": [
+        "Aggregate",
+        "Index Only Scan"
+      ],
+      "indexes": [
+        "o9_cov"
+      ],
+      "heap_fetches": 6617
+    },
+    "覆盖索引,再次 VACUUM 之后": {
+      "ms_median": 1.178,
+      "ms_min": 1.167,
+      "ms_max": 1.193,
+      "runs": [
+        1.193,
+        1.178,
+        1.189,
+        1.168,
+        1.167
+      ],
+      "shared_hit": 2794,
+      "shared_read": 0,
+      "nodes": [
+        "Aggregate",
+        "Index Only Scan"
+      ],
+      "indexes": [
+        "o9_cov"
+      ],
+      "heap_fetches": 0
+    }
+  },
+  "index_bytes_cov": 94609408
+}

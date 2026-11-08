@@ -1,0 +1,160 @@
+{
+  "rule": "R08",
+  "server": "18.6",
+  "rows": 10000000,
+  "variants": {
+    "无索引": {
+      "index_bytes": 0,
+      "q_top50": {
+        "ms_median": 733.487,
+        "ms_min": 717.205,
+        "ms_max": 756.493,
+        "runs": [
+          733.487,
+          717.205,
+          741.75,
+          756.493,
+          721.988
+        ],
+        "shared_hit": 2988,
+        "shared_read": 160947,
+        "nodes": [
+          "Limit",
+          "Sort",
+          "Seq Scan"
+        ],
+        "indexes": [],
+        "heap_fetches": 0
+      },
+      "q_range": {
+        "ms_median": 729.211,
+        "ms_min": 711.08,
+        "ms_max": 733.211,
+        "runs": [
+          729.394,
+          733.211,
+          723.456,
+          729.211,
+          711.08
+        ],
+        "shared_hit": 4116,
+        "shared_read": 159819,
+        "nodes": [
+          "Aggregate",
+          "Seq Scan"
+        ],
+        "indexes": [],
+        "heap_fetches": 0
+      },
+      "insert_300k_ms": [
+        1862.5,
+        437.3,
+        538.5
+      ]
+    },
+    "全量复合索引 (status, created_at)": {
+      "index_bytes": 316891136,
+      "q_top50": {
+        "ms_median": 0.043,
+        "ms_min": 0.039,
+        "ms_max": 0.057,
+        "runs": [
+          0.057,
+          0.047,
+          0.039,
+          0.043,
+          0.043
+        ],
+        "shared_hit": 53,
+        "shared_read": 0,
+        "nodes": [
+          "Limit",
+          "Index Scan"
+        ],
+        "indexes": [
+          "ix8"
+        ],
+        "heap_fetches": 0
+      },
+      "q_range": {
+        "ms_median": 6.053,
+        "ms_min": 5.287,
+        "ms_max": 11.971,
+        "runs": [
+          11.971,
+          9.331,
+          6.053,
+          5.456,
+          5.287
+        ],
+        "shared_hit": 10852,
+        "shared_read": 0,
+        "nodes": [
+          "Aggregate",
+          "Index Only Scan"
+        ],
+        "indexes": [
+          "ix8"
+        ],
+        "heap_fetches": 11537
+      },
+      "insert_300k_ms": [
+        1065.4,
+        919.6,
+        912.0
+      ]
+    },
+    "部分索引 (created_at) WHERE status='pending'": {
+      "index_bytes": 909312,
+      "q_top50": {
+        "ms_median": 0.022,
+        "ms_min": 0.021,
+        "ms_max": 0.052,
+        "runs": [
+          0.024,
+          0.021,
+          0.052,
+          0.022,
+          0.021
+        ],
+        "shared_hit": 52,
+        "shared_read": 0,
+        "nodes": [
+          "Limit",
+          "Index Scan"
+        ],
+        "indexes": [
+          "ix8"
+        ],
+        "heap_fetches": 0
+      },
+      "q_range": {
+        "ms_median": 4.273,
+        "ms_min": 4.176,
+        "ms_max": 6.651,
+        "runs": [
+          6.651,
+          4.3,
+          4.176,
+          4.273,
+          4.193
+        ],
+        "shared_hit": 10838,
+        "shared_read": 0,
+        "nodes": [
+          "Aggregate",
+          "Index Only Scan"
+        ],
+        "indexes": [
+          "ix8"
+        ],
+        "heap_fetches": 11537
+      },
+      "insert_300k_ms": [
+        474.0,
+        503.2,
+        484.5
+      ]
+    }
+  }
+}

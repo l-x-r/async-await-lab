@@ -1,0 +1,47 @@
+{
+  "rule": "R14",
+  "rows": 10000000,
+  "server": "18.6",
+  "普通 CREATE INDEX": {
+    "ddl": "CREATE INDEX ix14 ON orders (customer_id)",
+    "duration_ms": 4521.1,
+    "lock_modes_seen": [
+      "ShareLock"
+    ],
+    "writer": {
+      "count": 352,
+      "max_ms": 4520.6,
+      "p99_ms": 0.6,
+      "stalls_over_100ms": 1,
+      "errors": 0
+    },
+    "reader": {
+      "count": 2184,
+      "max_ms": 8.1,
+      "p99_ms": 3.7,
+      "stalls_over_100ms": 0,
+      "errors": 0
+    }
+  },
+  "CREATE INDEX CONCURRENTLY": {
+    "ddl": "CREATE INDEX CONCURRENTLY ix14 ON orders (customer_id)",
+    "duration_ms": 6449.9,
+    "lock_modes_seen": [
+      "ShareUpdateExclusiveLock"
+    ],
+    "writer": {
+      "count": 2913,
+      "max_ms": 8.6,
+      "p99_ms": 3.6,
+      "stalls_over_100ms": 0,
+      "errors": 0
+    },
+    "reader": {
+      "count": 3016,
+      "max_ms": 8.0,
+      "p99_ms": 2.4,
+      "stalls_over_100ms": 0,
+      "errors": 0
+    }
+  }
+}

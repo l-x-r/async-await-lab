@@ -1,0 +1,12 @@
+{
+  "rule": "R15",
+  "server": "18.6",
+  "unique_null": {
+    "u_default": "第二个 NULL:允许",
+    "u_nnd": "第二个 NULL:拒绝 -> ERROR:  duplicate key value violates unique constraint \"u_nnd_a_key\""
+  },
+  "on_conflict_partial_index": {
+    "ON CONFLICT (email) —— 不写谓词": "ERROR: ERROR:  there is no unique or exclusion constraint matching the ON CONFLICT specification",
+    "ON CONFLICT (email) WHERE deleted_at IS NULL —— 带谓词": "OK"
+  }
+}
