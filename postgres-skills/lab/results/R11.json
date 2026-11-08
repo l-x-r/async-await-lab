@@ -1,0 +1,52 @@
+{
+  "rule": "R11",
+  "server": "18.6",
+  "rows": 5000000,
+  "key": "md5 文本(32 字符)",
+  "variants": {
+    "B-tree": {
+      "index_bytes": 295280640,
+      "build_s": 6.5,
+      "plan_nodes": [
+        "Index Scan"
+      ],
+      "plan_indexes": [
+        "kv_k"
+      ],
+      "lookup": {
+        "tps_median": 13917,
+        "tps_min": 13352,
+        "tps_max": 14007,
+        "runs": [
+          14007,
+          13917,
+          13353,
+          13960,
+          13352
+        ]
+      }
+    },
+    "Hash": {
+      "index_bytes": 134234112,
+      "build_s": 8.4,
+      "plan_nodes": [
+        "Index Scan"
+      ],
+      "plan_indexes": [
+        "kv_k"
+      ],
+      "lookup": {
+        "tps_median": 15181,
+        "tps_min": 14656,
+        "tps_max": 15555,
+        "runs": [
+          15181,
+          15555,
+          15406,
+          14656,
+          14914
+        ]
+      }
+    }
+  }
+}

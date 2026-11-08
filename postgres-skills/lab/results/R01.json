@@ -1,0 +1,38 @@
+{
+  "rule": "R01",
+  "server": "18.6",
+  "rows": 10000000,
+  "fk_add_and_validate_s": 5.1,
+  "delete_unreferenced_parent_ms_without_index": [
+    673.8,
+    611.1,
+    603.4,
+    577.8,
+    577.5,
+    629.7
+  ],
+  "delete_unreferenced_parent_ms_with_index": [
+    0.4,
+    0.1,
+    0.1,
+    0.1,
+    0.1,
+    0.1
+  ],
+  "median_without_ms": 607.25,
+  "median_with_ms": 0.1,
+  "speedup_x": 6072,
+  "index_build_s": 3.5,
+  "index_bytes": 90251264,
+  "index_size": "86.1 MB",
+  "insert_200k_ms_with_index": [
+    4729.5,
+    2119.8,
+    2186.4
+  ],
+  "insert_200k_ms_without_index": [
+    1453.3,
+    1472.8,
+    1376.1
+  ]
+}

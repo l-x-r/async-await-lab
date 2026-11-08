@@ -1,0 +1,8 @@
+{
+  "rule": "R04",
+  "server": "18.6",
+  "float8_sum_of_1e6_x_0.1": "100000.00000133288",
+  "numeric_sum_of_1e6_x_0.1": "100000.0",
+  "float8_0.1+0.2==0.3": false,
+  "numeric_0.1+0.2==0.3": true
+}

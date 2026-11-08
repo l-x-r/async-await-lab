@@ -1,0 +1,229 @@
+{
+  "rule": "R10",
+  "server": "18.6",
+  "rows": 10000000,
+  "offset": {
+    "0": {
+      "ms_median": 0.01,
+      "ms_min": 0.01,
+      "ms_max": 0.015,
+      "runs": [
+        0.015,
+        0.011,
+        0.01,
+        0.01,
+        0.01
+      ],
+      "shared_hit": 4,
+      "shared_read": 0,
+      "nodes": [
+        "Limit",
+        "Index Scan"
+      ],
+      "indexes": [
+        "orders_pkey"
+      ],
+      "heap_fetches": 0
+    },
+    "10000": {
+      "ms_median": 1.274,
+      "ms_min": 1.235,
+      "ms_max": 1.339,
+      "runs": [
+        1.339,
+        1.318,
+        1.236,
+        1.235,
+        1.274
+      ],
+      "shared_hit": 195,
+      "shared_read": 0,
+      "nodes": [
+        "Limit",
+        "Index Scan"
+      ],
+      "indexes": [
+        "orders_pkey"
+      ],
+      "heap_fetches": 0
+    },
+    "100000": {
+      "ms_median": 13.368,
+      "ms_min": 12.987,
+      "ms_max": 13.849,
+      "runs": [
+        13.368,
+        13.528,
+        13.849,
+        13.106,
+        12.987
+      ],
+      "shared_hit": 1916,
+      "shared_read": 0,
+      "nodes": [
+        "Limit",
+        "Index Scan"
+      ],
+      "indexes": [
+        "orders_pkey"
+      ],
+      "heap_fetches": 0
+    },
+    "1000000": {
+      "ms_median": 136.894,
+      "ms_min": 135.536,
+      "ms_max": 150.215,
+      "runs": [
+        147.165,
+        135.919,
+        135.536,
+        136.894,
+        150.215
+      ],
+      "shared_hit": 19129,
+      "shared_read": 0,
+      "nodes": [
+        "Limit",
+        "Index Scan"
+      ],
+      "indexes": [
+        "orders_pkey"
+      ],
+      "heap_fetches": 0
+    },
+    "5000000": {
+      "ms_median": 1011.437,
+      "ms_min": 984.269,
+      "ms_max": 1078.332,
+      "runs": [
+        994.362,
+        1011.437,
+        984.269,
+        1019.203,
+        1078.332
+      ],
+      "shared_hit": 0,
+      "shared_read": 95632,
+      "nodes": [
+        "Limit",
+        "Index Scan"
+      ],
+      "indexes": [
+        "orders_pkey"
+      ],
+      "heap_fetches": 0
+    }
+  },
+  "keyset": {
+    "0": {
+      "ms_median": 0.013,
+      "ms_min": 0.013,
+      "ms_max": 0.017,
+      "runs": [
+        0.017,
+        0.013,
+        0.013,
+        0.013,
+        0.013
+      ],
+      "shared_hit": 4,
+      "shared_read": 0,
+      "nodes": [
+        "Limit",
+        "Index Scan"
+      ],
+      "indexes": [
+        "orders_pkey"
+      ],
+      "heap_fetches": 0
+    },
+    "10000": {
+      "ms_median": 0.014,
+      "ms_min": 0.013,
+      "ms_max": 0.019,
+      "runs": [
+        0.019,
+        0.015,
+        0.013,
+        0.013,
+        0.014
+      ],
+      "shared_hit": 5,
+      "shared_read": 0,
+      "nodes": [
+        "Limit",
+        "Index Scan"
+      ],
+      "indexes": [
+        "orders_pkey"
+      ],
+      "heap_fetches": 0
+    },
+    "100000": {
+      "ms_median": 0.015,
+      "ms_min": 0.014,
+      "ms_max": 0.018,
+      "runs": [
+        0.016,
+        0.014,
+        0.015,
+        0.018,
+        0.015
+      ],
+      "shared_hit": 4,
+      "shared_read": 0,
+      "nodes": [
+        "Limit",
+        "Index Scan"
+      ],
+      "indexes": [
+        "orders_pkey"
+      ],
+      "heap_fetches": 0
+    },
+    "1000000": {
+      "ms_median": 0.023,
+      "ms_min": 0.021,
+      "ms_max": 0.027,
+      "runs": [
+        0.024,
+        0.023,
+        0.027,
+        0.022,
+        0.021
+      ],
+      "shared_hit": 4,
+      "shared_read": 0,
+      "nodes": [
+        "Limit",
+        "Index Scan"
+      ],
+      "indexes": [
+        "orders_pkey"
+      ],
+      "heap_fetches": 0
+    },
+    "5000000": {
+      "ms_median": 0.013,
+      "ms_min": 0.013,
+      "ms_max": 0.015,
+      "runs": [
+        0.015,
+        0.015,
+        0.013,
+        0.013,
+        0.013
+      ],
+      "shared_hit": 4,
+      "shared_read": 0,
+      "nodes": [
+        "Limit",
+        "Index Scan"
+      ],
+      "indexes": [
+        "orders_pkey"
+      ],
+      "heap_fetches": 0
+    }
+  }
+}
