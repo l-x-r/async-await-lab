@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PostgreSQL 设计精华 — 从 4 个热门 Skill 里提炼</title>
+<meta name="description" content="读完 supabase、wshobson、Neon、ECC 的 PostgreSQL 设计 Skill 原文后提炼的精华:类型、键、约束、索引、分区、多租户、安全迁移与诊断。">
+<style>
+:root{--bg:#f7f8f5;--ink:#202c29;--muted:#738079;--line:#dce2db;--green:#26694a;--lime:#d5edaa;--orange:#d7814f;--purple:#9275c1;--red:#b8483c;--card:#fff;--code:#2d3c32;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.8}
+a{color:inherit}
+.shell{max-width:1080px;margin:auto;padding:0 32px}
+header{height:84px;display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:11px;font-size:19px;font-weight:750;letter-spacing:-.5px;text-decoration:none}
+.mark{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:8px;background:var(--green);color:#fff;font-size:16px}
+.brand small{font-size:10px;letter-spacing:1px;color:var(--muted);font-weight:500;margin-left:7px}
+nav{display:flex;gap:22px;font-size:13px;flex-wrap:wrap}
+nav a{text-decoration:none;color:#4f5d56}
+nav a:hover{color:var(--green)}
+.hero{padding:56px 0 36px}
+.eyebrow{font:11px var(--mono);letter-spacing:2px;color:var(--green);display:flex;gap:8px;align-items:center}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+h1{font-size:44px;line-height:1.2;letter-spacing:-1.5px;margin:14px 0 16px}
+h1 em{font-style:normal;color:var(--green)}
+.lead{max-width:760px;color:#5d6b63;font-size:16px;margin:0}
+.lead strong{color:var(--ink)}
+section{padding:20px 0 30px;scroll-margin-top:20px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:18px;flex-wrap:wrap}
+.section-head h2{font-size:21px;letter-spacing:-.5px;margin:0}
+.section-head h2 span{font:11px var(--mono);color:#879388;margin-right:12px}
+.section-head>span{color:var(--muted);font-size:12px}
+h3{font-size:16px;margin:0 0 6px;letter-spacing:-.2px}
+p{margin:6px 0}
+ul{margin:6px 0;padding-left:1.2em}
+li{margin:4px 0}
+code{font:0.88em var(--mono);background:#eaefe6;padding:1px 6px;border-radius:4px;color:#1f4d37}
+pre{margin:10px 0 0;padding:15px 17px;background:var(--code);color:#e6efdc;border-radius:10px;overflow-x:auto;font:12.5px/1.75 var(--mono);border:1px solid #536b48}
+pre code{background:none;color:inherit;padding:0;font:inherit}
+pre .c{color:#9fb28f}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;min-width:0}
+.card.pick{border-left:4px solid var(--green)}
+.tag{display:inline-block;font:10px var(--mono);letter-spacing:1px;color:var(--green);background:var(--lime);padding:2px 9px;border-radius:99px;margin-bottom:8px}
+.tag.warn{background:#f6dccb;color:#8a4a22}
+.tag.violet{background:#e6def4;color:#5d4590}
+.idx{font:10px var(--mono);letter-spacing:1.5px;color:#879388;display:block;margin-bottom:6px}
+.takeaway{background:var(--green);color:#f1f8e8;border-radius:12px;padding:20px 24px;margin-top:16px}
+.takeaway strong{color:var(--lime)}
+.takeaway p{margin:4px 0 0}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#eef3e9;font-weight:600;font-size:13px}
+tr:last-child td{border-bottom:none}
+td.bad{color:var(--red)}
+td.good{color:var(--green);font-weight:600}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.pair pre{margin:0}
+.pair .bad pre{border-color:#8c4b43}
+.pair .lab{font:11px var(--mono);letter-spacing:1px;margin-bottom:6px}
+.pair .bad .lab{color:var(--red)}
+.pair .good .lab{color:var(--green)}
+.note{background:#fbf3e4;color:#7a5520;border-radius:10px;padding:12px 16px;font-size:14px;margin-top:14px}
+.steps{counter-reset:s;list-style:none;padding:0}
+.steps li{counter-increment:s;position:relative;padding-left:38px;margin:10px 0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:1px;width:26px;height:26px;border-radius:50%;background:var(--lime);color:var(--green);font:600 12px/26px var(--mono);text-align:center}
+.check{list-style:none;padding:0}
+.check li{padding-left:28px;position:relative}
+.check li::before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:700}
+.src{font-size:13px;color:var(--muted)}
+.src a{color:var(--green)}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:23px 0 36px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:#98a08e;font:10px/1.7 var(--mono)}
+footer a{color:#6f7f69}
+@media(max-width:820px){
+  .shell{padding:0 20px}
+  .g2,.g3,.pair{grid-template-columns:1fr}
+  h1{font-size:32px}
+  header{height:auto;padding:16px 0;flex-direction:column;align-items:flex-start}
+  .brand small{display:none}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body><div class="shell">
+
+<header>
+  <a class="brand" href="../"><span class="mark">↗</span> Async Lab <small>← 返回主页</small></a>
+  <nav>
+    <a href="#pick">怎么选</a><a href="#schema">表设计</a><a href="#index">索引</a><a href="#big">分区</a><a href="#secure">多租户与安全</a><a href="#workload">负载模式</a><a href="#migrate">安全迁移</a><a href="#ops">连接·锁·诊断</a><a href="#template">模板</a>
+  </nav>
+</header>
+
+<main>
+<div class="hero">
+  <div class="eyebrow"><span class="dot"></span> POSTGRESQL DESIGN NOTES</div>
+  <h1>PostgreSQL 设计,<em>只留精华。</em></h1>
+  <p class="lead">我读完了 4 个热门 PostgreSQL 设计 Skill 的原文(supabase、wshobson、Neon、ECC),把它们<strong>反复一致、可直接照做</strong>的规则合并成这一页。每条规则都标明了是“该这样”还是“别这样”,并附可复制的 SQL。</p>
+</div>
+
+<section id="pick">
+  <div class="section-head"><h2><span>00 /</span>先装哪个</h2><span>一句话结论</span></div>
+  <div class="grid g2">
+    <div class="card pick"><span class="tag">通用首选</span><h3>supabase-postgres-best-practices</h3><p>按影响程度把 31 条规则分成 8 类,每条都是“错误写法 → 正确写法”的 SQL 对照。覆盖查询、连接、安全/RLS、表设计、锁、数据访问、监控。内容适用于任何 Postgres。</p></div>
+    <div class="card pick"><span class="tag">表结构专精</span><h3>postgresql-table-design</h3><p>只管“把表建对”:类型、键、约束、索引、分区、JSONB、扩展,外加更新密集 / 写入密集 / upsert / 在线改表四种负载模式。</p></div>
+    <div class="card"><span class="tag violet">运维向</span><h3>postgres-best-practices(Neon)</h3><p>覆盖 PostgreSQL 14–18,附 13 份参考:表设计、索引、EXPLAIN、事务隔离、备份、复制、升级、连接池。“在线迁移安全表”和“索引选择决策树”是亮点。</p></div>
+    <div class="card"><span class="tag violet">速查表</span><h3>postgres-patterns(ECC)</h3><p>一页纸速查:索引对照、类型对照、常用写法、反模式检测 SQL、配置模板。基于 Supabase 规则改写。</p></div>
+  </div>
+  <p class="src" style="margin-top:12px">Neon 另有一个偏平台的 neon-postgres Skill,主要讲 Neon 本身的用法,不在本页提炼范围。</p>
+</section>
+
+<section id="schema">
+  <div class="section-head"><h2><span>01 /</span>表设计铁律</h2><span>几个 Skill 一致同意的部分</span></div>
+
+  <div class="grid g2">
+    <div class="card"><span class="idx">主键</span><h3>用 bigint identity;UUID 只在需要时用</h3>
+      <ul>
+        <li>单库默认 <code>BIGINT GENERATED ALWAYS AS IDENTITY</code>。</li>
+        <li>需要分布式 / 对外不可猜的 ID 才用 UUID,并且<strong>用时间有序的 v7</strong>(PG18+ 有 <code>uuidv7()</code>,更早版本用 pg_uuidv7 扩展)。</li>
+        <li>随机 UUID v4 做大表主键会让索引碎片化、插入分散。</li>
+        <li>时序 / 日志 / 事件表常常不需要主键,可用 (时间, 设备) 之类的自然键。</li>
+      </ul></div>
+    <div class="card"><span class="idx">范式</span><h3>先到 3NF,有实测证据再反范式</h3>
+      <ul>
+        <li>反范式只用于“连接成本已被证明是瓶颈”的读多场景。</li>
+        <li>物化视图是更干净的反范式读模型:<code>REFRESH MATERIALIZED VIEW CONCURRENTLY</code>,需要有唯一索引。</li>
+        <li>数组适合标签这类简单有序列表;多对多关系用中间表,别用数组。</li>
+      </ul></div>
+    <div class="card"><span class="idx">命名</span><h3>全小写 snake_case</h3>
+      <p>不带引号的标识符会被折叠成小写。带引号的 <code>"UserId"</code> 之后永远要加引号,ORM、工具和 AI 都容易踩坑。ORM 默认生成驼峰时,改配置而不是迁就它。</p></div>
+    <div class="card"><span class="idx">外键</span><h3>外键列必须手动建索引</h3>
+      <p>Postgres <strong>不会</strong>给外键列自动建索引。没有索引时,JOIN 和 <code>ON DELETE CASCADE</code> 都会全表扫描,删父行还会长时间持锁。同时要显式写 <code>ON DELETE / ON UPDATE</code> 行为;循环依赖用 <code>DEFERRABLE INITIALLY DEFERRED</code>。</p></div>
+  </div>
+
+  <h3 style="margin-top:26px">类型选择:避免 → 改用</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>避免</th><th>改用</th><th>原因</th></tr></thead>
+    <tbody>
+      <tr><td class="bad"><code>timestamp</code> / <code>timetz</code></td><td class="good"><code>timestamptz</code></td><td>始终存带时区的时刻;不要给它指定精度</td></tr>
+      <tr><td class="bad"><code>varchar(n)</code> / <code>char(n)</code></td><td class="good"><code>text</code></td><td>性能相同;需要长度限制时加 <code>CHECK (length(col) &lt;= n)</code></td></tr>
+      <tr><td class="bad"><code>money</code> / <code>float</code> 存金额</td><td class="good"><code>numeric(p,s)</code></td><td>精确十进制运算</td></tr>
+      <tr><td class="bad"><code>serial</code></td><td class="good"><code>generated always as identity</code></td><td>SQL 标准写法</td></tr>
+      <tr><td class="bad"><code>int</code> 做 ID</td><td class="good"><code>bigint</code></td><td>int 在约 21 亿处溢出</td></tr>
+      <tr><td class="bad">用 varchar 存布尔 / 数字</td><td class="good"><code>boolean NOT NULL</code> / <code>numeric</code></td><td>占用更小,比较更快,杜绝脏值</td></tr>
+      <tr><td class="bad"><code>real</code></td><td class="good"><code>double precision</code></td><td>除非存储极度紧张</td></tr>
+      <tr><td class="bad"><code>json</code></td><td class="good"><code>jsonb</code></td><td>除非必须保留原始键顺序</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><span class="idx">枚举</span><h3>ENUM 只给“小而稳定”的集合</h3><p>星期、美国州这类可以。订单状态这类会演化的业务值,用 <code>TEXT + CHECK</code> 或查找表,改起来不痛。</p></div>
+    <div class="card"><span class="idx">JSONB</span><h3>只放可选 / 半结构化属性</h3><p>核心关系留在普通列里。给 JSONB 加 <code>CHECK (jsonb_typeof(col) = 'object')</code> 约束形状;常查的标量字段抽成生成列再建 B-tree。</p></div>
+  </div>
+
+  <h3 style="margin-top:26px">约束</h3>
+  <div class="grid g2">
+    <div class="card"><ul>
+      <li><strong>NOT NULL</strong> 能加就加,常用值配 <code>DEFAULT</code>。</li>
+      <li><strong>CHECK</strong> 只检查当前行,且 NULL 会通过 → 要和 NOT NULL 搭配:<code>price NUMERIC NOT NULL CHECK (price &gt; 0)</code>。</li>
+    </ul></div>
+    <div class="card"><ul>
+      <li><strong>UNIQUE</strong> 默认允许多个 NULL;PG15+ 用 <code>UNIQUE NULLS NOT DISTINCT</code> 限制只能有一个。</li>
+      <li><strong>EXCLUDE</strong> 防重叠(订房防重订):<code>EXCLUDE USING gist (room_id WITH =, booking_period WITH &amp;&amp;)</code>。</li>
+    </ul></div>
+  </div>
+
+  <h3 style="margin-top:26px">几个 Postgres 特有的坑</h3>
+  <div class="card"><ul class="check">
+    <li>字段超长 / 精度溢出会<strong>直接报错</strong>,不会静默截断(往 <code>NUMERIC(2,0)</code> 塞 999 会失败)。</li>
+    <li>identity / sequence 有空洞是正常的(回滚、崩溃、并发都会产生),不要去“修”。</li>
+    <li>堆表没有聚簇主键;<code>CLUSTER</code> 只是一次性重排,后续插入不会维持。</li>
+    <li>MVCC:更新和删除会留下死元组,靠 vacuum 回收;设计时避免“宽行被频繁更新”。</li>
+    <li>大于约 2KB 的值会自动进 TOAST 压缩存储,默认策略通常已经最优。</li>
+  </ul></div>
+</section>
+
+<section id="index">
+  <div class="section-head"><h2><span>02 /</span>索引</h2><span>只为你真的会查的路径建索引</span></div>
+
+  <div class="grid g2">
+    <div class="card"><span class="idx">决策树(Neon)</span>
+      <ol class="steps">
+        <li><strong>用什么运算符?</strong> <code>= &lt; &gt; BETWEEN</code> → B-tree;JSONB / 数组的 <code>@&gt; ? &amp;&amp;</code> → GIN;全文检索 <code>@@</code> → GIN;<code>ILIKE '%x%'</code> → GIN + pg_trgm;范围 / 几何重叠 → GiST;追加写入、天然有序 → BRIN。</li>
+        <li><strong>命中多少行?</strong> 超过表的 10–20% 时,索引可能还不如顺序扫描。</li>
+        <li><strong>能缩小索引吗?</strong> 大多数查询只看某个子集 → 部分索引。</li>
+        <li><strong>要不要免回表?</strong> 加 <code>INCLUDE</code> 列做覆盖索引。</li>
+        <li><strong>列是表达式吗?</strong> 用表达式索引。</li>
+      </ol></div>
+    <div class="card"><span class="idx">写法对照</span>
+<pre><code><span class="c">-- 复合索引:等值列在前,范围列在后(最左前缀)</span>
+CREATE INDEX ON orders (status, created_at);
+
+<span class="c">-- 覆盖索引:SELECT 的列放 INCLUDE</span>
+CREATE INDEX ON users (email) INCLUDE (name, created_at);
+
+<span class="c">-- 部分索引:只索引活跃行,更小更快</span>
+CREATE INDEX ON users (email) WHERE deleted_at IS NULL;
+
+<span class="c">-- 表达式索引:查询里的表达式必须一致</span>
+CREATE UNIQUE INDEX ON users (LOWER(email));
+
+<span class="c">-- BRIN:超大时序表,体积极小</span>
+CREATE INDEX ON events USING brin (created_at);</code></pre></div>
+  </div>
+
+  <div class="grid g3" style="margin-top:14px">
+    <div class="card"><h3>最左前缀</h3><p><code>(a,b)</code> 能服务 <code>WHERE a=?</code> 和 <code>a=? AND b&gt;?</code>,<strong>不能</strong>服务只有 <code>b</code> 的查询。</p></div>
+    <div class="card"><h3>别在 B-tree 上查 JSONB</h3><p>B-tree 不支持 <code>@&gt;</code>。用 GIN;只做包含查询时用 <code>jsonb_path_ops</code> 更小更快(代价是不支持 <code>?</code> 键存在)。</p></div>
+    <div class="card"><h3>索引不是越多越好</h3><p>每个索引都拖慢写入。要定期找“从没被用过”和“重复”的索引并删掉。</p></div>
+  </div>
+
+  <p class="note" style="margin-top:14px">找出缺失的外键索引:</p>
+<pre><code>SELECT conrelid::regclass AS table_name, a.attname AS fk_column
+FROM pg_constraint c
+JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = ANY(c.conkey)
+WHERE c.contype = 'f'
+  AND NOT EXISTS (
+    SELECT 1 FROM pg_index i
+    WHERE i.indrelid = c.conrelid AND a.attnum = ANY(i.indkey)
+  );</code></pre>
+</section>
+
+<section id="big">
+  <div class="section-head"><h2><span>03 /</span>大表与分区</h2><span>不到必要不分区</span></div>
+  <div class="grid g2">
+    <div class="card"><span class="idx">什么时候分</span><ul>
+      <li>表超过约 <strong>1 亿行</strong>,且查询稳定地带分区键过滤。</li>
+      <li>或者维护动作(清理旧数据、批量替换)是按某个键进行的。</li>
+      <li>好处:查询只扫相关分区;<code>DROP TABLE</code> 一个旧分区是瞬间完成,而 <code>DELETE</code> 要几小时。</li>
+    </ul></div>
+    <div class="card"><span class="idx">怎么分</span><ul>
+      <li><strong>RANGE</strong>:时序数据,最常见。</li>
+      <li><strong>LIST</strong>:离散值,如地区、多租户。</li>
+      <li><strong>HASH</strong>:没有自然键又想均匀分布。</li>
+      <li>用声明式分区(或 TimescaleDB),<strong>不要用表继承</strong>。</li>
+    </ul></div>
+  </div>
+<pre><code>CREATE TABLE events (
+  id         BIGINT GENERATED ALWAYS AS IDENTITY,
+  created_at TIMESTAMPTZ NOT NULL,
+  data       JSONB
+) PARTITION BY RANGE (created_at);
+
+CREATE TABLE events_2026_11 PARTITION OF events
+  FOR VALUES FROM ('2026-11-01') TO ('2026-12-01');</code></pre>
+  <div class="note"><strong>限制要记住:</strong>没有全局唯一约束,主键 / UNIQUE 必须包含分区键;分区父表上不能直接 <code>CREATE INDEX CONCURRENTLY</code>,要用 <code>ON ONLY</code> 建无效父索引,再逐个分区并发建索引后挂接。</div>
+</section>
+
+<section id="secure">
+  <div class="section-head"><h2><span>04 /</span>多租户与安全</h2><span>让数据库而不是应用来守门</span></div>
+  <div class="grid g2">
+    <div class="card"><span class="idx">共享表 + tenant_id</span><ul>
+      <li>每张表带 <code>tenant_id</code>,并把它放进所有相关索引(与其他列组成复合索引)。</li>
+      <li>只靠应用层加 <code>WHERE</code> 过滤,一个 bug 就可能泄露全部租户的数据。用 RLS 兜底。</li>
+    </ul>
+<pre><code>ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders FORCE ROW LEVEL SECURITY; <span class="c">-- 表所有者也受约束</span>
+
+CREATE POLICY tenant_isolation ON orders
+  USING (tenant_id = current_setting('app.current_tenant')::int);</code></pre></div>
+    <div class="card"><span class="idx">RLS 性能</span><ul>
+      <li>策略里的函数调用<strong>包一层 <code>(SELECT …)</code></strong>,否则每行都会调一次;大表上差 100 倍以上。</li>
+      <li>策略用到的列要建索引。</li>
+    </ul>
+<pre><code><span class="c">-- 慢:每行调用一次</span>
+USING (auth.uid() = user_id)
+
+<span class="c">-- 快:只算一次并缓存</span>
+USING ((SELECT auth.uid()) = user_id)</code></pre></div>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><span class="idx">SECURITY DEFINER 函数</span><p>它以创建者权限运行并绕过 RLS,很有用也很危险。务必:</p><ul>
+      <li>放在不对外暴露的私有 schema;</li>
+      <li><code>SET search_path = ''</code>;</li>
+      <li>函数体内显式校验调用者身份;</li>
+      <li>对 PUBLIC 和不该调用的角色 <code>REVOKE EXECUTE</code>。</li>
+    </ul></div>
+    <div class="card"><span class="idx">最小权限</span><ul>
+      <li>应用不要用超级用户,也不要 <code>GRANT ALL</code>——一次 SQL 注入就是灾难。</li>
+      <li>分角色:只读 / 读写(不给 DELETE),登录角色继承它们。</li>
+      <li>收回默认权限:<code>REVOKE ALL ON SCHEMA public FROM public</code>。</li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="workload">
+  <div class="section-head"><h2><span>05 /</span>按负载模式设计</h2><span>先问:这张表是读多、写多还是更新多?</span></div>
+  <div class="grid g2">
+    <div class="card"><span class="tag warn">更新密集</span><ul>
+      <li>把频繁更新的列拆到单独的表(冷热分离),减少膨胀。</li>
+      <li><code>fillfactor = 90</code> 为 HOT 更新留页内空间,省掉索引维护。</li>
+      <li>避免更新带索引的列,否则无法 HOT。</li>
+      <li>高频更新的行放进独立分区。</li>
+    </ul></div>
+    <div class="card"><span class="tag warn">写入密集</span><ul>
+      <li>索引只留必须的,每个索引都会拖慢插入。</li>
+      <li>用 <code>COPY</code> 或多行 <code>INSERT</code>(每批约 1000 行),不要逐行插。</li>
+      <li>可重建的暂存数据用 <code>UNLOGGED</code> 表。</li>
+      <li>批量导入:先删索引、导入、再重建。</li>
+      <li>按时间 / 哈希分区分散压力。</li>
+    </ul></div>
+    <div class="card"><span class="tag warn">Upsert</span><ul>
+      <li><code>ON CONFLICT (a,b)</code> 需要与之<strong>完全匹配</strong>的唯一索引(部分索引不行)。</li>
+      <li>用 <code>EXCLUDED.col</code> 取待插入值;不需要更新时 <code>DO NOTHING</code> 更快。</li>
+      <li>不要“先 SELECT 再 INSERT”,并发下会冲突。</li>
+    </ul></div>
+    <div class="card"><span class="tag warn">队列 / 分页</span><ul>
+      <li>多 worker 抢任务用 <code>FOR UPDATE SKIP LOCKED</code>。</li>
+      <li>翻页用游标(keyset),不要深 OFFSET——OFFSET 要扫过所有被跳过的行。</li>
+      <li>消灭 N+1:用 <code>= ANY($1::bigint[])</code> 或 JOIN 一次取完。</li>
+    </ul></div>
+  </div>
+<pre><code><span class="c">-- 原子地"领取并标记"一个任务</span>
+UPDATE jobs SET status = 'processing', worker_id = $1, started_at = now()
+WHERE id = (
+  SELECT id FROM jobs WHERE status = 'pending'
+  ORDER BY created_at LIMIT 1
+  FOR UPDATE SKIP LOCKED
+)
+RETURNING *;
+
+<span class="c">-- 游标分页:多列排序时游标要包含全部排序列</span>
+SELECT * FROM products
+WHERE (created_at, id) &gt; ('2026-01-15 10:00:00', 12345)
+ORDER BY created_at, id LIMIT 20;</code></pre>
+</section>
+
+<section id="migrate">
+  <div class="section-head"><h2><span>06 /</span>在线改表:哪些安全,哪些会锁</h2><span>来自 Neon 与 wshobson</span></div>
+  <div class="scroll"><table>
+    <thead><tr><th>操作</th><th>在线安全?</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>ADD COLUMN</code>(可空,无默认值)</td><td class="good">安全</td><td>只改元数据,瞬间完成</td></tr>
+      <tr><td><code>ADD COLUMN … DEFAULT x</code></td><td class="good">安全</td><td>非易变默认值不重写表;<strong>易变默认值</strong>(<code>now()</code>、<code>gen_random_uuid()</code>)加 NOT NULL 列会重写整张表</td></tr>
+      <tr><td><code>DROP COLUMN</code></td><td class="good">安全</td><td>仅标记删除,不重写</td></tr>
+      <tr><td><code>SET NOT NULL</code></td><td>小心</td><td>要全表扫描校验;用下面的 CHECK 四步法</td></tr>
+      <tr><td><code>ALTER COLUMN TYPE</code></td><td class="bad">不安全</td><td>重写整表并持排他锁</td></tr>
+      <tr><td><code>ADD CONSTRAINT … NOT VALID</code></td><td class="good">安全</td><td>不扫描存量行</td></tr>
+      <tr><td><code>VALIDATE CONSTRAINT</code></td><td class="good">安全</td><td>读写不被阻塞</td></tr>
+      <tr><td><code>CREATE INDEX CONCURRENTLY</code></td><td class="good">安全</td><td>不阻塞写入,但不能放进事务里</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card"><span class="idx">安全地加 NOT NULL</span>
+<pre><code><span class="c">-- 1. 加约束但不校验存量行</span>
+ALTER TABLE orders ADD CONSTRAINT orders_status_nn
+  CHECK (status IS NOT NULL) NOT VALID;
+<span class="c">-- 2. 后台校验(不阻塞读写)</span>
+ALTER TABLE orders VALIDATE CONSTRAINT orders_status_nn;
+<span class="c">-- 3. 此时 SET NOT NULL 是瞬时的</span>
+ALTER TABLE orders ALTER COLUMN status SET NOT NULL;
+<span class="c">-- 4. 删掉多余的 CHECK</span>
+ALTER TABLE orders DROP CONSTRAINT orders_status_nn;</code></pre></div>
+    <div class="card"><span class="idx">写迁移的几个技巧</span><ul>
+      <li>Postgres 大多数 DDL 是事务性的:<code>BEGIN; ALTER …; ROLLBACK;</code> 可以安全试跑。</li>
+      <li><code>ADD CONSTRAINT IF NOT EXISTS</code> <strong>不存在</strong>。要幂等,用 <code>DO</code> 块先查 <code>pg_constraint</code>。</li>
+      <li>先删约束再删列,避免依赖报错。</li>
+      <li><code>CREATE OR REPLACE FUNCTION</code> 参数不同时会新建重载而不是替换,需要手动 DROP 旧版本。</li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="ops">
+  <div class="section-head"><h2><span>07 /</span>连接、锁与诊断</h2><span>性能问题大多出在这里</span></div>
+  <div class="grid g3">
+    <div class="card"><span class="idx">连接</span><ul>
+      <li>每个连接占约 1–3MB 内存;<strong>一定要用连接池</strong>(PgBouncer)。</li>
+      <li>多数应用用事务模式;命名预处理语句在事务池里会找不到,改用无名语句,或用会话模式。</li>
+      <li><code>max_connections</code> 实务上 100–200 即可;<code>work_mem × 连接数</code> 别超过内存的约 25%。</li>
+      <li>池大小经验值:<code>CPU 核数 × 2 + 磁盘数</code>。</li>
+    </ul></div>
+    <div class="card"><span class="idx">锁与事务</span><ul>
+      <li>事务要短,<strong>不要在事务里调外部 API</strong>,否则锁会被持有几秒。</li>
+      <li>多行加锁按固定顺序(如按 id),避免死锁。</li>
+      <li>设置超时:<code>idle_in_transaction_session_timeout = '30s'</code>、<code>statement_timeout</code>。</li>
+      <li>只需应用层互斥时,用 advisory lock,不要造“锁行”。</li>
+    </ul></div>
+    <div class="card"><span class="idx">诊断</span><ul>
+      <li><code>EXPLAIN (ANALYZE, BUFFERS)</code>:大表 Seq Scan、<code>Rows Removed by Filter</code> 很大 → 缺索引;<code>Sort Method: external merge</code> → work_mem 偏小。</li>
+      <li>启用 <code>pg_stat_statements</code>,按总耗时找最该优化的查询。</li>
+      <li>大批量变更后 <code>ANALYZE</code>;热点表调低 autovacuum 的触发比例。</li>
+    </ul></div>
+  </div>
+</section>
+
+<section id="template">
+  <div class="section-head"><h2><span>08 /</span>可直接用的建表模板</h2><span>综合以上规则</span></div>
+<pre><code>CREATE TABLE users (
+  user_id    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  email      TEXT NOT NULL,
+  name       TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX users_email_lower_uq ON users (LOWER(email));
+
+CREATE TABLE orders (
+  order_id   BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id    BIGINT NOT NULL REFERENCES users(user_id),
+  status     TEXT NOT NULL DEFAULT 'PENDING'
+             CHECK (status IN ('PENDING','PAID','CANCELED')),
+  total      NUMERIC(10,2) NOT NULL CHECK (total &gt; 0),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX orders_user_id_idx    ON orders (user_id);    <span class="c">-- 外键必须手动建索引</span>
+CREATE INDEX orders_created_at_idx ON orders (created_at);
+
+CREATE TABLE profiles (
+  user_id BIGINT PRIMARY KEY REFERENCES users(user_id),
+  attrs   JSONB NOT NULL DEFAULT '{}' CHECK (jsonb_typeof(attrs) = 'object'),
+  theme   TEXT GENERATED ALWAYS AS (attrs-&gt;&gt;'theme') STORED
+);
+CREATE INDEX profiles_attrs_gin ON profiles USING GIN (attrs);</code></pre>
+
+  <h3 style="margin-top:26px">上线前自查清单</h3>
+  <div class="card"><ul class="check">
+    <li>每张引用表都有主键,ID 用 bigint identity(或 UUIDv7)。</li>
+    <li>时间用 <code>timestamptz</code>,金额用 <code>numeric</code>,字符串用 <code>text</code>。</li>
+    <li>该非空的列都加了 <code>NOT NULL</code>,有 <code>CHECK</code> 兜住取值范围。</li>
+    <li>所有外键列都有索引,并写明了 <code>ON DELETE</code> 行为。</li>
+    <li>索引只对应真实查询;复合索引等值列在前、范围列在后。</li>
+    <li>多租户表带 <code>tenant_id</code> 并启用 RLS,策略里的函数用 <code>(SELECT …)</code> 包裹。</li>
+    <li>应用使用连接池和最小权限角色,设置了语句 / 空闲事务超时。</li>
+    <li>迁移已按“在线安全”表审过:没有易变默认值加 NOT NULL、没有直接改列类型。</li>
+  </ul></div>
+  <p class="note">版本提示:Neon 的 Skill 覆盖 PostgreSQL 14–18,其中 PG14 的官方支持将在 2026 年 11 月结束。文中带 PG15+ / PG18+ 的特性请按你的实际版本取舍。</p>
+</section>
+
+<section id="sources">
+  <div class="section-head"><h2><span>09 /</span>来源</h2><span>以上内容均读自各仓库的 SKILL.md 与参考文件</span></div>
+  <ul class="src">
+    <li><a href="https://github.com/supabase/agent-skills">supabase/agent-skills</a> · supabase-postgres-best-practices(MIT)</li>
+    <li><a href="https://github.com/wshobson/agents">wshobson/agents</a> · postgresql-table-design(database-design 插件)</li>
+    <li><a href="https://github.com/neondatabase/postgres-skills">neondatabase/postgres-skills</a> · postgres-best-practices</li>
+    <li><a href="https://github.com/affaan-m/everything-claude-code">affaan-m/everything-claude-code</a> · postgres-patterns(基于 Supabase 规则)</li>
+  </ul>
+  <p class="src">本页是我对这些 Skill 的归纳与改写,不是原文转载。具体规则以各仓库最新内容为准;使用前请结合自己的 PostgreSQL 版本和负载验证。</p>
+</section>
+</main>
+
+<footer><span>↗ <a href="../">ASYNC LAB</a> <span> / </span> POSTGRESQL DESIGN NOTES</span><span>只留精华。</span></footer>
+</div></body>
+</html>
