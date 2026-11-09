@@ -1,4 +1,4 @@
-"""从 results/*.json 与 rules.py 生成 ../handbook/index.html。运行:python3 build_page.py"""
+"""从 results/*.json 与 rules.py 生成 ../index.html。运行:python3 build_page.py"""
 import html
 import json
 import os
@@ -8,8 +8,8 @@ import rules as RL
 from checks import CHECKS
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, "..", "handbook", "index.html")
-OLD = os.path.join(HERE, "..", "index.html")
+OUT = os.path.join(HERE, "..", "index.html")
+OLD = os.path.join(HERE, "css_base.html")
 e = html.escape
 
 css = re.search(r"<style>(.*?)</style>", open(OLD, encoding="utf-8").read(), re.S).group(1)
@@ -159,20 +159,20 @@ page = f"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PostgreSQL 表结构设计 · 经过验证的规则手册</title>
+<title>PostgreSQL 18 设计规则手册(实测版)</title>
 <meta name="description" content="15 条 PostgreSQL 18 表结构设计规则:每条都有官方文档出处或可复现实验,预测错了也如实公布。">
 <style>{css}</style>
 </head>
 <body><div class="shell">
 <header>
-  <a class="brand" href="../../"><span class="mark">↗</span> Async Lab <small>← 返回主页</small></a>
+  <a class="brand" href="../"><span class="mark">↗</span> Async Lab <small>← 返回主页</small></a>
   <nav>{nav}</nav>
 </header>
 <main>
 <div class="hero">
   <div class="eyebrow"><span class="dot"></span> VERIFIED RULEBOOK</div>
   <h1>PostgreSQL 表结构设计,<em>只留验证过的。</em></h1>
-  <p class="lead">15 条规则,不是 15 条意见。每条都标明证据来自<strong>官方文档</strong>还是<strong>我在真实 PostgreSQL 18.6 上跑的实验</strong>,写明代价、反例,并附一条能在你自己的库上运行的检查查询。实验先写预测、再测量:<strong>{len(predictions)} 项预测里 {n_ok} 项命中、{len(predictions) - n_ok} 项错了</strong>,错的也列在下面。旧的 <a href="../">精华总结页</a> 保留。</p>
+  <p class="lead">15 条规则,不是 15 条意见。每条都标明证据来自<strong>官方文档</strong>还是<strong>我在真实 PostgreSQL 18.6 上跑的实验</strong>,写明代价、反例,并附一条能在你自己的库上运行的检查查询。实验先写预测、再测量:<strong>{len(predictions)} 项预测里 {n_ok} 项命中、{len(predictions) - n_ok} 项错了</strong>,错的也列在下面。</p>
 </div>
 
 <section id="premise">
@@ -229,7 +229,7 @@ page = f"""<!DOCTYPE html>
     <li><code>python3 build_page.py</code>:用你自己的 results 重新生成本页,看结论是否一致。</li></ol></div>
 </section>
 </main>
-<footer><span>↗ <a href="../../">ASYNC LAB</a> / <a href="../">POSTGRESQL DESIGN NOTES</a> / VERIFIED RULEBOOK</span><span>PG 18.6 · 数据与脚本见 lab/</span></footer>
+<footer><span>↗ <a href="../">ASYNC LAB</a> / POSTGRESQL DESIGN NOTES / VERIFIED RULEBOOK</span><span>PG 18.6 · 数据与脚本见 lab/</span></footer>
 </div></body>
 </html>
 """

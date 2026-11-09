@@ -1,6 +1,6 @@
 # PostgreSQL 表结构设计手册 — 复现脚本
 
-页面:`../handbook/index.html`(由 `build_page.py` 从 `results/*.json` 生成)。
+页面:`../index.html`(由 `build_page.py` 从 `results/*.json` 生成)。
 
 ## 环境
 - PostgreSQL 18(实验用 18.6),版本对照用 16.15(`LAB_PGPORT_OLD`)。
