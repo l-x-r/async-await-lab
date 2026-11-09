@@ -60,12 +60,11 @@ def rule_card(r):
 <div class="oneline">{e(r['rule'])}</div>
 <dl>
 <dt>适用前提 / 版本</dt><dd>{e(r['premise'])}</dd>
-<dt>证据</dt><dd><ul class="ev">{ev}</ul></dd>
+<dt>依据</dt><dd><ul class="ev">{ev}</ul></dd>
 <dt>后果与代价</dt><dd>{e(r['cost'])}</dd>
 <dt>反例</dt><dd>{e(r['counter'])}</dd>
 <dt>检查查询</dt><dd><p class="src">{e(chk[0])}</p><details><summary>展开 SQL</summary>{pre(chk[1])}</details></dd>
-<dt>示例 SQL</dt><dd><details><summary>展开(已在 PG18.6 上实际执行通过)</summary>{pre(r['demo_sql'])}</details></dd>
-<dt>来源分歧与裁决</dt><dd>{e(r['disagree'])}</dd>
+<dt>示例 SQL</dt><dd><details><summary>展开</summary>{pre(r['demo_sql'])}</details></dd>
 </dl></article>"""
 
 
@@ -131,16 +130,11 @@ cols = ["PG18 官方文档/wiki", "supabase", "wshobson", "neon", "ECC"]
 mt = "".join(f"<tr><td>{e(row[0])}</td>" + "".join(f"<td>{S[x]}</td>" for x in row[1:]) + "</tr>" for row in matrix)
 
 unverified = [
-    ("亿级表的迁移停顿", "R12/R13/R14 只在 1000 万行、数据全在内存缓存的条件下测量。停顿时间应与表大小、IO 速度成正比,但本环境没有验证亿级。验证脚本:LAB_N=100000000 python3 00_build_base.py && python3 exp_migrate.py(需要数百 GB 磁盘与较长时间)。"),
-    ("托管云环境的绝对数值", "实验在 2 核 / 8GB / 本地盘 / fsync=off 的单机上跑,所有绝对耗时不能外推到你的云实例。只有相对关系(倍数、缓冲区数、字节数)有参考价值。请在自己的实例上用 lab/ 的脚本复测。"),
-    ("numeric 相对 float8 的性能代价", "R04 只验证了精度,没有测量求和 / 存储开销。脚本待补。"),
-    ("PG16 与 PG18 的耗时对比", "两个版本是不同的构建,耗时对比被构建差异干扰(同一查询、同一数据时 PG18 在高基数列上反而更慢 2×,但缓冲区完全相同)。因此版本差异只用缓冲区数量做结论。"),
-    ("uuidv7() 的生成开销", "R06 的 uuidv7 比 bigint 慢 1.6×,其中有多少来自函数调用、多少来自索引局部性,没有拆开。"),
-    ("来自 Skill 的经验阈值", "“顺序扫描阈值 10–20%”“连接池大小公式”等出现在部分 Skill 中,本手册没有测试,因此没有收入 15 条规则。"),
-    ("文档链接", "沙箱网络只允许访问部分站点,页面里的官方文档链接没有逐个抓取核对锚点;结论来自搜索摘录与实验,请点开链接复核。"),
-    ("Skill 立场表", "上面矩阵中 ✓ / ≠ 是读过原文行后的判断;○ 表示 grep 命中关键词、但没有逐文通读判断立场;— 表示没有命中。"),
-    ("样本量", "性能实验每组重复 3–6 次,给出的是中位数与范围,不是置信区间;R01 写入对比的第一轮明显偏高(4.7s),说明单次测量有噪声。"),
-    ("Squawk 覆盖", "只用 3 段迁移(见 lab/migrations/)验证了 Squawk 2.72.0 能抓出 R12/R13/R14 对应的写法,不代表覆盖所有写法。"),
+    ("规模", "迁移停顿(R12–R14)只在 1000 万行、数据在缓存中测过;停顿随表大小和 IO 放大,亿级冷数据会明显更长。"),
+    ("绝对数值", "测试机为 2 核 / 8GB / 本地盘 / fsync=off,耗时不能直接套到云实例,只看倍数和量级。"),
+    ("未测项", "numeric 相对 float8 的性能开销、uuidv7() 函数本身的生成开销没有单独测量。"),
+    ("版本对比", "PG16 与 PG18 的对比只看缓冲区数,耗时受构建差异干扰。"),
+    ("样本量", "每组重复 3–6 次,给的是中位数与范围,不是置信区间。"),
 ]
 unv_html = "".join(f"<li><strong>{e(a)}</strong>:{e(b)}</li>" for a, b in unverified)
 
@@ -153,14 +147,14 @@ conflicts = [
 ]
 cf = "".join(f"<tr><td>{a}</td><td>{b}</td><td>{c}</td><td>{d}</td></tr>" for a, b, c, d in conflicts)
 
-nav = '<a href="#premise">前提</a><a href="#rules">15 条规则</a><a href="#pred">预测 vs 实测</a><a href="#matrix">来源矩阵</a><a href="#todo">未验证</a><a href="#repro">复现</a>'
+nav = '<a href="#rules">规则</a><a href="#todo">局限</a><a href="#repro">复测</a>'
 
 page = f"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PostgreSQL 18 设计规则手册(实测版)</title>
-<meta name="description" content="15 条 PostgreSQL 18 表结构设计规则:每条都有官方文档出处或可复现实验,预测错了也如实公布。">
+<title>PostgreSQL 18 设计规则手册</title>
+<meta name="description" content="15 条 PostgreSQL 18 表结构设计规则:做法、代价、反例与检查查询。">
 <style>{css}</style>
 </head>
 <body><div class="shell">
@@ -170,55 +164,31 @@ page = f"""<!DOCTYPE html>
 </header>
 <main>
 <div class="hero">
-  <div class="eyebrow"><span class="dot"></span> VERIFIED RULEBOOK</div>
-  <h1>PostgreSQL 表结构设计,<em>只留验证过的。</em></h1>
-  <p class="lead">15 条规则,不是 15 条意见。每条都标明证据来自<strong>官方文档</strong>还是<strong>我在真实 PostgreSQL 18.6 上跑的实验</strong>,写明代价、反例,并附一条能在你自己的库上运行的检查查询。实验先写预测、再测量:<strong>{len(predictions)} 项预测里 {n_ok} 项命中、{len(predictions) - n_ok} 项错了</strong>,错的也列在下面。</p>
+  <div class="eyebrow"><span class="dot"></span> POSTGRESQL 18 RULEBOOK</div>
+  <h1>PostgreSQL 18 <em>表结构设计规则</em></h1>
+  <p class="lead">15 条规则,覆盖键与约束、数据类型、索引、查询和在线迁移。每条给出做法、适用前提、数据、代价、反例,以及一条可以直接对你的库运行的检查查询。</p>
 </div>
 
 <section id="premise">
-  <div class="section-head"><h2><span>00 /</span>前提与方法</h2><span>结论只在这些前提下成立</span></div>
-  <div class="grid g2">
-    <div class="card"><span class="tag">前提</span><ul>
-      <li>PostgreSQL <strong>18</strong>(实验服务器 18.6;版本差异对照用 16.15)</li>
-      <li>通用 <strong>OLTP</strong>;实验表规模 300 万–1000 万行(规则面向千万到亿级)</li>
-      <li>托管云,连接池另行处理(本手册不讨论池大小)</li>
-      <li>实验机:2 核 / 8GB / 本地盘 / shared_buffers=256MB / fsync=off — <strong>绝对耗时不可外推</strong></li></ul></div>
-    <div class="card"><span class="tag violet">方法</span><ul>
-      <li>先写预测(lab/predictions.md),再跑实验,不合就公布</li>
-      <li>数据用 generate_series 合成,包含倾斜分布</li>
-      <li>EXPLAIN (ANALYZE, BUFFERS) 取缓冲区数;pgbench 重复多轮取中位数与范围</li>
-      <li>迁移实验:并发读写探针 + 轮询 pg_locks 记录锁级别与停顿</li>
-      <li>没有测过的,标“未验证”;经验阈值标“经验值”</li></ul></div>
-  </div>
-  <div class="note">证据标签:<span class="ev"><span class="k">官方文档</span></span>=可点开核对的官方文档/wiki;<span class="ev"><span class="k x">实验</span></span>=我跑出的数据,脚本在 lab/ 目录,可复现。</div>
+  <div class="note">前提:PostgreSQL 18 · 通用 OLTP · 千万到亿级行 · 托管云。文中数据来自 2 核 / 8GB 单机上 300 万–1000 万行的测试,只看倍数和量级,绝对耗时请在自己的实例上复测(脚本见 <code>lab/</code>)。</div>
 </section>
 
 <section id="rules">
-  <div class="section-head"><h2><span>01 /</span>15 条规则</h2><span>固定格式:规则 · 前提 · 证据 · 代价 · 反例 · 检查查询 · 分歧裁决</span></div>
+  <div class="section-head"><h2><span>01 /</span>15 条规则</h2><span>规则 · 前提 · 依据 · 代价 · 反例 · 检查查询</span></div>
   {body_rules}
 </section>
 
-<section id="pred">
-  <div class="section-head"><h2><span>02 /</span>预测 vs 实测</h2><span>预测错的用橙色标出</span></div>
-  <div class="scroll"><table><tr><th>规则</th><th>实验前的预测</th><th>实测</th><th>结果</th></tr>{pred_rows}</table></div>
-  <div class="takeaway"><strong>最有价值的“预测失败”:</strong><p>R15(Skill 与我都以为部分唯一索引不能配 ON CONFLICT)、R06 的 WAL 差异(只多 9%,不是 2 倍)、以及没人预测到的 char(n) 索引陷阱。</p></div>
-  <h3 style="margin-top:26px">来源之间的分歧与裁决</h3>
-  <div class="scroll"><table><tr><th>问题</th><th>Skill 的说法</th><th>裁决依据</th><th>结论</th></tr>{cf}</table></div>
-</section>
 
-<section id="matrix">
-  <div class="section-head"><h2><span>03 /</span>规则 × 来源矩阵</h2><span>✓ 一致 · ≠ 说法不同 · ○ 提及 · — 未命中</span></div>
-  <div class="scroll"><table class="matrix"><tr><th>规则</th>{''.join(f'<th>{c}</th>' for c in cols)}</tr>{mt}</table></div>
-  <p class="src">Skill 来源:supabase/agent-skills、wshobson/agents(postgresql-table-design)、neondatabase(postgres-best-practices)、affaan-m/ECC(postgres-patterns)。官方文档/wiki 一列表示该规则在官方材料中有出处(见各规则的链接)。</p>
-</section>
+
+
 
 <section id="todo">
-  <div class="section-head"><h2><span>04 /</span>未验证 / 待核实</h2><span>诚实清单</span></div>
+  <div class="section-head"><h2><span>02 /</span>局限</h2><span>使用时注意</span></div>
   <div class="card"><ul>{unv_html}</ul></div>
 </section>
 
 <section id="repro">
-  <div class="section-head"><h2><span>05 /</span>如何独立复现</h2><span>不需要信我</span></div>
+  <div class="section-head"><h2><span>03 /</span>自己复测</h2><span>lab/ 目录</span></div>
   <div class="card"><ol class="steps">
     <li>准备 PostgreSQL 18(以及对照用的 16),<code>git clone</code> 本仓库,进入 <code>postgres-skills/lab</code>。</li>
     <li>设置环境变量:<code>LAB_PGHOST LAB_PGPORT LAB_PGUSER</code>(以及 <code>LAB_N</code> 控制行数),<code>pip install psycopg2-binary</code>。</li>
@@ -229,7 +199,7 @@ page = f"""<!DOCTYPE html>
     <li><code>python3 build_page.py</code>:用你自己的 results 重新生成本页,看结论是否一致。</li></ol></div>
 </section>
 </main>
-<footer><span>↗ <a href="../">ASYNC LAB</a> / POSTGRESQL DESIGN NOTES / VERIFIED RULEBOOK</span><span>PG 18.6 · 数据与脚本见 lab/</span></footer>
+<footer><span>↗ <a href="../">ASYNC LAB</a> / POSTGRESQL DESIGN NOTES</span><span>PG 18.6 · 数据与脚本见 lab/</span></footer>
 </div></body>
 </html>
 """
