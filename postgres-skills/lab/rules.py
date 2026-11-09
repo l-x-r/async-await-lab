@@ -109,9 +109,9 @@ CREATE INDEX ON r01_child (parent_id);""",
             ("exp", f"实验({r03['rows']:,} 行,点查 pgbench 5 轮):text 中位 {r3['text']['lookup']['tps_median']:,} TPS(范围 {r3['text']['lookup']['tps_min']:,}–{r3['text']['lookup']['tps_max']:,}),"
                     f"varchar(32) {r3['varchar(32)']['lookup']['tps_median']:,}(范围 {r3['varchar(32)']['lookup']['tps_min']:,}–{r3['varchar(32)']['lookup']['tps_max']:,});两者表/索引体积完全相同({mb(r3['text']['heap_bytes'])} / {mb(r3['text']['index_bytes'])})。"
                     f"char(32):表 {mb(r3['char(32)']['heap_bytes'])}(+{(r3['char(32)']['heap_bytes'] / r3['text']['heap_bytes'] - 1) * 100:.0f}%),索引 {mb(r3['char(32)']['index_bytes'])}(+{(r3['char(32)']['index_bytes'] / r3['text']['index_bytes'] - 1) * 100:.0f}%)。"),
-            ("exp", "意外发现(预测没有想到):char(n) 列与 text 表达式比较(例如 col = md5(...))会被转成 ::text,无法使用 char(n) 上的索引,退化为顺序扫描——下面的 EXPLAIN 在 PG18 上实测。"),
+            ("exp", "陷阱:char(n) 列与 text 表达式比较(例如 col = md5(...))会被转成 ::text,无法使用 char(n) 上的索引,退化为顺序扫描(见下方 EXPLAIN)。"),
         ],
-        cost="改限长时 CHECK 约束可以 NOT VALID 在线添加;varchar(n) 缩小长度的重写行为属文档层面说法,本手册未验证。",
+        cost="改限长时 CHECK 约束可以 NOT VALID 在线添加。",
         counter="与遗留系统/外部 schema 对接且要求 char(n) 的场景。",
         demo_sql="""CREATE TABLE r03_users (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -134,7 +134,7 @@ EXPLAIN SELECT 1 FROM r03_c WHERE code = md5('5')::char(32);""",
             ("doc", "https://wiki.postgresql.org/wiki/Don't_Do_This", "官方 wiki:不要用 money;浮点数不适合存储精确金额。"),
             ("exp", f"实验:100 万个 0.1 求和,float8 = {r04['float8_sum_of_1e6_x_0.1']},numeric = {r04['numeric_sum_of_1e6_x_0.1']};0.1+0.2=0.3 在 float8 为 {r04['float8_0.1+0.2==0.3']},numeric 为 {r04['numeric_0.1+0.2==0.3']}。"),
         ],
-        cost="numeric 比 float8 占更多空间、运算更慢(本手册未测量,属于文档层面的常识,标为“未验证”)。",
+        cost="numeric 比 float8 占更多空间、运算更慢(未单独测量)。",
         counter="聚合分析、机器学习特征等不要求精确十进制语义的列。",
         demo_sql="""CREATE TABLE r04_payments (
   id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -309,7 +309,7 @@ ALTER TABLE r12_t VALIDATE CONSTRAINT r12_note_nn;""",
             ("exp", f"实验(PG18.6,{r13['rows']:,} 行):DEFAULT 0 {ms(c13[k13[0]]['duration_ms'])},relfilenode 未变;"
                     f"DEFAULT clock_timestamp() {ms(c13[k13[1]]['duration_ms'])}(重写,写入探针最长停顿 {ms(c13[k13[1]]['writer']['max_ms'])});"
                     f"DEFAULT uuidv7() {ms(c13[k13[2]]['duration_ms'])}(重写,停顿 {ms(c13[k13[2]]['writer']['max_ms'])})。"),
-            ("exp", "额外验证(1,000,000 行小表,relfilenode 对比):DEFAULT now() 不重写;DEFAULT gen_random_uuid() 重写——now() 是 STABLE 而非 VOLATILE。"),
+            ("exp", "100 万行小表对比 relfilenode:DEFAULT now() 不重写;DEFAULT gen_random_uuid() 重写——now() 是 STABLE 而非 VOLATILE。"),
         ],
         cost="易变默认值需要分批回填:先加可空列,再分批 UPDATE,最后加约束。",
         counter="可以接受停机的小表。",
