@@ -6,20 +6,24 @@
 
 ## 目录
 
-| 主题 | 内容 | 位置 |
-|---|---|---|
-| [看懂 async / await](https://l-x-r.github.io/lab/async-await/) | JavaScript 交互教程：逐步执行、微任务、错误处理、串行与并发对比、小测验 | `async-await/` |
-| [PostgreSQL 18 设计规则手册](https://l-x-r.github.io/lab/postgresql/) | 15 条表结构设计规则，附检查查询与测试脚本 | `postgresql/` |
+### JS
+- [看懂 async / await](https://l-x-r.github.io/lab/js/async-await/)：交互教程，逐步执行、微任务、错误处理、串行与并发对比、小测验（`js/async-await/`）
+
+### 数据库
+- [PostgreSQL 18 设计规则手册](https://l-x-r.github.io/lab/db/postgresql/)：15 条表结构设计规则，附检查查询与测试脚本（`db/postgresql/`）
+
+### AI
+- 暂无
 
 ![async / await 执行现场预览](docs/preview.png)
 
 ## 结构
 
 - `index.html`：知识库首页（目录）。
-- 每个主题一个目录，入口是该目录下的 `index.html`，单文件、无需构建。
-- `postgresql/lab/`：PostgreSQL 手册的测试脚本与原始结果，用法见其中的 `README.md`；页面由 `build_page.py` 生成。
+- 按领域分目录（`js/`、`db/`、`ai/`），每篇文章一个子目录，入口是其中的 `index.html`，单文件、无需构建。
+- `db/postgresql/lab/`：PostgreSQL 手册的测试脚本与原始结果，用法见其中的 `README.md`；页面由 `build_page.py` 生成。
 - `docs/`：README 用图片。
-- `.github/workflows/pages.yml`：部署到 GitHub Pages。新增主题目录时，要在 “Prepare static site” 步骤里加一行 `cp -R <目录> _site/<目录>`。
+- `.github/workflows/pages.yml`：部署到 GitHub Pages。已发布 `js/` 和 `db/`；新增领域目录（如 `ai/`）时，在 “Prepare static site” 步骤的 `cp -R js db _site/` 里加上它。
 
 ## 本地浏览
 

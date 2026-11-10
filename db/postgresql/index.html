@@ -105,7 +105,7 @@ td.num{font-family:var(--mono);font-size:13px}
 </head>
 <body><div class="shell">
 <header>
-  <a class="brand" href="../"><span class="mark">↗</span> Lab <small>← 返回目录</small></a>
+  <a class="brand" href="../../"><span class="mark">↗</span> Lab <small>← 返回目录</small></a>
   <nav><a href="#rules">规则</a><a href="#todo">局限</a><a href="#repro">复测</a></nav>
 </header>
 <main>
@@ -438,7 +438,7 @@ CREATE INDEX CONCURRENTLY r14_idx ON r14_t (customer_id);</code></pre></details>
 <section id="repro">
   <div class="section-head"><h2><span>03 /</span>自己复测</h2><span>lab/ 目录</span></div>
   <div class="card"><ol class="steps">
-    <li>准备 PostgreSQL 18(以及对照用的 16),<code>git clone</code> 本仓库,进入 <code>postgresql/lab</code>。</li>
+    <li>准备 PostgreSQL 18(以及对照用的 16),<code>git clone</code> 本仓库,进入 <code>db/postgresql/lab</code>。</li>
     <li>设置环境变量:<code>LAB_PGHOST LAB_PGPORT LAB_PGUSER</code>(以及 <code>LAB_N</code> 控制行数),<code>pip install psycopg2-binary</code>。</li>
     <li><code>python3 00_build_base.py new</code> 建基础数据,再依次运行 <code>exp_semantics.py / exp_index.py / exp_types.py / exp_migrate.py</code>,结果写入 <code>results/*.json</code>。</li>
     <li><code>python3 checks.py</code>:在“故意违规”的库里每条检查必须有输出,在“按规则建”的库里必须为空(自测)。<code>checks.sql</code> 可直接对你的库运行。</li>
@@ -447,6 +447,6 @@ CREATE INDEX CONCURRENTLY r14_idx ON r14_t (customer_id);</code></pre></details>
     <li><code>python3 build_page.py</code>:用你自己的 results 重新生成本页,看结论是否一致。</li></ol></div>
 </section>
 </main>
-<footer><span>↗ <a href="../">LAB</a> / POSTGRESQL</span><span>PG 18.6 · 数据与脚本见 lab/</span></footer>
+<footer><span>↗ <a href="../../">LAB</a> / DB / POSTGRESQL</span><span>PG 18.6 · 数据与脚本见 lab/</span></footer>
 </div></body>
 </html>

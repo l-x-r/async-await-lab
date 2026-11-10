@@ -19,12 +19,18 @@ header{height:84px;display:flex;align-items:center;border-bottom:1px solid var(-
 h1{font-size:44px;line-height:1.2;letter-spacing:-1.5px;margin:14px 0 16px}
 h1 em{font-style:normal;color:var(--green)}
 .lead{max-width:680px;color:#5d6b63;font-size:16px;margin:0}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding-bottom:40px}
+.cat{padding:8px 0 34px}
+.cat-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.cat-head h2{font-size:21px;letter-spacing:-.5px;margin:0}
+.cat-head span{font:11px var(--mono);color:#879388;letter-spacing:1px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.empty{color:var(--muted);font-size:14px;margin:0}
+.toc{display:flex;gap:18px;font-size:13px;margin-top:20px}.toc a{color:var(--green);text-decoration:none}
 .card{display:block;background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px 26px;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
 .card:hover{border-color:var(--green);transform:translateY(-2px)}
 .tag{display:inline-block;font:10px var(--mono);letter-spacing:1px;color:var(--green);background:var(--lime);padding:2px 9px;border-radius:99px}
 .tag.v{background:#e6def4;color:#5d4590}
-.card h2{font-size:20px;letter-spacing:-.4px;margin:12px 0 6px}
+.card h3{font-size:20px;letter-spacing:-.4px;margin:12px 0 6px}
 .card p{margin:0;color:#5d6b63;font-size:14px}
 .go{display:block;margin-top:14px;font:12px var(--mono);color:var(--green)}
 footer{border-top:1px solid var(--line);padding:23px 0 36px;color:#98a08e;font:10px/1.7 var(--mono)}
@@ -39,21 +45,34 @@ footer{border-top:1px solid var(--line);padding:23px 0 36px;color:#98a08e;font:1
   <div class="eyebrow"><span class="dot"></span> KNOWLEDGE BASE</div>
   <h1>把看不见的东西，<em>变成看得懂的。</em></h1>
   <p class="lead">中文技术知识库：交互式教程，以及附带测试脚本的设计规则。</p>
+  <nav class="toc"><a href="#js">JS</a><a href="#db">数据库</a><a href="#ai">AI</a></nav>
 </div>
-<div class="grid">
-  <a class="card" href="async-await/">
-    <span class="tag">JAVASCRIPT · 交互教程</span>
-    <h2>看懂 async / await</h2>
+<section class="cat" id="js">
+  <div class="cat-head"><h2>JavaScript</h2><span>JS</span></div>
+  <div class="grid">
+  <a class="card" href="js/async-await/">
+    <span class="tag">交互教程</span>
+    <h3>看懂 async / await</h3>
     <p>用执行动画逐步演示 await 的暂停与恢复、微任务顺序、错误处理，以及串行与并发的差别。</p>
     <span class="go">打开 →</span>
   </a>
-  <a class="card" href="postgresql/">
-    <span class="tag v">POSTGRESQL · 规则手册</span>
-    <h2>PostgreSQL 18 设计规则手册</h2>
+  </div>
+</section>
+<section class="cat" id="db">
+  <div class="cat-head"><h2>数据库</h2><span>DB</span></div>
+  <div class="grid">
+  <a class="card" href="db/postgresql/">
+    <span class="tag v">规则手册</span>
+    <h3>PostgreSQL 18 设计规则手册</h3>
     <p>15 条表结构设计规则：键与约束、数据类型、索引、分页和在线迁移，每条附检查查询。</p>
     <span class="go">打开 →</span>
   </a>
-</div>
+  </div>
+</section>
+<section class="cat" id="ai">
+  <div class="cat-head"><h2>AI</h2><span>AI</span></div>
+  <p class="empty">暂无文章。</p>
+</section>
 </main>
 <footer>↗ LAB</footer>
 </div></body>
