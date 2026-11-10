@@ -35,7 +35,8 @@ jobs:
           mkdir -p _site
           cp index.html .nojekyll _site/
           cp -R docs _site/docs
-          cp -R postgres-skills _site/postgres-skills
+          cp -R async-await _site/async-await
+          cp -R postgresql _site/postgresql
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0

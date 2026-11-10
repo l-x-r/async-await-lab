@@ -1,26 +1,27 @@
-# Async Lab · 看懂 async / await
+# Lab · 技术知识库
 
-一个中文 JavaScript 异步交互教程，通过代码高亮、函数卡移动和输出日志，展示 `async / await` 的执行过程。
+中文技术笔记与交互教程。
 
-**[在线体验 →](https://l-x-r.github.io/async-await-lab/)**
+**[在线浏览 →](https://l-x-r.github.io/lab/)**
 
-![执行现场预览](docs/preview.png)
+## 目录
 
-## 内容
+| 主题 | 内容 | 位置 |
+|---|---|---|
+| [看懂 async / await](https://l-x-r.github.io/lab/async-await/) | JavaScript 交互教程：逐步执行、微任务、错误处理、串行与并发对比、小测验 | `async-await/` |
+| [PostgreSQL 18 设计规则手册](https://l-x-r.github.io/lab/postgresql/) | 15 条表结构设计规则，附检查查询与测试脚本 | `postgresql/` |
 
-- 理论导读：Promise 的状态、async 返回值、await 暂停与恢复、微任务调度。
-- 三个可逐步执行的场景：基础 await、微任务顺序、错误处理。
-- 执行现场：同一张函数卡在执行区、暂停区、微任务队列之间移动，标明外层脚本何时继续。
-- 支持自动播放、暂停、调速、单步前进、回退和重置。
-- 串行与并发对比：调整两个独立任务的耗时，观察等待时间如何重叠。
-- 输出顺序小测验与常见问题。
-- 响应式布局，支持桌面和手机；为减少动态效果的系统偏好提供适配。
+![async / await 执行现场预览](docs/preview.png)
+
+## 结构
+
+- `index.html`：知识库首页（目录）。
+- 每个主题一个目录，入口是该目录下的 `index.html`，单文件、无需构建。
+- `postgresql/lab/`：PostgreSQL 手册的测试脚本与原始结果，用法见其中的 `README.md`；页面由 `build_page.py` 生成。
+- `docs/`：README 用图片。
+- `.github/workflows/pages.yml`：部署到 GitHub Pages。新增主题目录时，要在 “Prepare static site” 步骤里加一行 `cp -R <目录> _site/<目录>`。
 
 ## 本地浏览
-
-直接用浏览器打开 `index.html` 即可，无需安装依赖或构建。
-
-也可以在仓库目录启动静态服务器：
 
 ```sh
 python3 -m http.server 8000
@@ -28,17 +29,11 @@ python3 -m http.server 8000
 
 然后访问 `http://localhost:8000`。
 
-## GitHub Pages
+## 部署
 
-通过 `.github/workflows/pages.yml` 发布。推送到 `main` 分支后会自动部署，也可以在 Actions 页面手动运行。Pages 的发布来源设置为 **GitHub Actions**。
+推送到 `main` 后由 GitHub Actions 自动部署（Pages 的发布来源设置为 **GitHub Actions**）。工作流固定使用 `ubuntu-24.04`，官方 Actions 固定到已验证版本的提交。
 
-工作流固定使用 `ubuntu-24.04`，并将官方 Actions 固定到已验证版本的提交。上传组件使用支持 Node.js 24 的版本，避免旧版 Node.js 和 `ubuntu-latest` 镜像迁移提示。
+## 说明
 
-- `index.html`：页面内容、样式与交互逻辑，完整保存在单个文件中。
-- `.github/workflows/pages.yml`：打包并部署静态页面。
-- `.nojekyll`：直接发布静态文件。
-- `docs/preview.png`：README 预览图。
-
-## 演示边界
-
-执行现场使用确定性的教学步骤，演示时间不代表程序的实际运行耗时。“暂停区”只是便于理解的状态示意，并非 JavaScript 引擎中的独立队列。串行与并发部分使用理想计时模型，不计调度和网络开销。
+- async / await 教程的执行现场使用确定性的教学步骤，演示时间不代表实际耗时；“暂停区”是便于理解的示意，并非引擎中的独立队列。
+- PostgreSQL 手册中的数据来自单机测试，只看倍数和量级，绝对耗时请在自己的环境复测。

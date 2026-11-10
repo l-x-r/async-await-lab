@@ -9,10 +9,10 @@ from checks import CHECKS
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "..", "index.html")
-OLD = os.path.join(HERE, "css_base.html")
+CSS = os.path.join(HERE, "base.css")
 e = html.escape
 
-css = re.search(r"<style>(.*?)</style>", open(OLD, encoding="utf-8").read(), re.S).group(1)
+css = open(CSS, encoding="utf-8").read()
 css += """
 .rule{margin:18px 0}
 .rule h3{font-size:18px}
@@ -153,13 +153,13 @@ page = f"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PostgreSQL 18 设计规则手册</title>
+<title>PostgreSQL 18 设计规则手册 — Lab</title>
 <meta name="description" content="15 条 PostgreSQL 18 表结构设计规则:做法、代价、反例与检查查询。">
 <style>{css}</style>
 </head>
 <body><div class="shell">
 <header>
-  <a class="brand" href="../"><span class="mark">↗</span> Async Lab <small>← 返回主页</small></a>
+  <a class="brand" href="../"><span class="mark">↗</span> Lab <small>← 返回目录</small></a>
   <nav>{nav}</nav>
 </header>
 <main>
@@ -190,7 +190,7 @@ page = f"""<!DOCTYPE html>
 <section id="repro">
   <div class="section-head"><h2><span>03 /</span>自己复测</h2><span>lab/ 目录</span></div>
   <div class="card"><ol class="steps">
-    <li>准备 PostgreSQL 18(以及对照用的 16),<code>git clone</code> 本仓库,进入 <code>postgres-skills/lab</code>。</li>
+    <li>准备 PostgreSQL 18(以及对照用的 16),<code>git clone</code> 本仓库,进入 <code>postgresql/lab</code>。</li>
     <li>设置环境变量:<code>LAB_PGHOST LAB_PGPORT LAB_PGUSER</code>(以及 <code>LAB_N</code> 控制行数),<code>pip install psycopg2-binary</code>。</li>
     <li><code>python3 00_build_base.py new</code> 建基础数据,再依次运行 <code>exp_semantics.py / exp_index.py / exp_types.py / exp_migrate.py</code>,结果写入 <code>results/*.json</code>。</li>
     <li><code>python3 checks.py</code>:在“故意违规”的库里每条检查必须有输出,在“按规则建”的库里必须为空(自测)。<code>checks.sql</code> 可直接对你的库运行。</li>
@@ -199,7 +199,7 @@ page = f"""<!DOCTYPE html>
     <li><code>python3 build_page.py</code>:用你自己的 results 重新生成本页,看结论是否一致。</li></ol></div>
 </section>
 </main>
-<footer><span>↗ <a href="../">ASYNC LAB</a> / POSTGRESQL DESIGN NOTES</span><span>PG 18.6 · 数据与脚本见 lab/</span></footer>
+<footer><span>↗ <a href="../">LAB</a> / POSTGRESQL</span><span>PG 18.6 · 数据与脚本见 lab/</span></footer>
 </div></body>
 </html>
 """
